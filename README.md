@@ -2,8 +2,8 @@
 # MIS3060 Business Intelligence with AI
 Villanova School of Business — Fall 2026
 
-**Student:** [Your Full Name]
-**GitHub:** [Your GitHub Username]
+**Student:** [Brandon Le]
+**GitHub:** [BeeeLayyy]
 
 ## About This Repository
 This repository contains all lab exercises, homework assignments, and project
