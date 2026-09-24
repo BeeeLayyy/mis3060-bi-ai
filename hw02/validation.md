@@ -15,7 +15,7 @@ Script ran without errors on the first attempt. No debugging needed.
 | Null count — `amount` | 0 | 0 | Yes | |
 | Unique `txn_type` values | 6 | 6 | Yes | |
 | Count of `Buy` transactions | 83,556 | 83,556 | Yes | Also confirmed by cross-validation (2C) |
-| `txn_date` data type | object | str | Yes (see note) | pandas 3.x reports text columns as `str` instead of `object`. Both mean the column is text, not a datetime, so the finding is the same |
+| `txn_date` data type | object | str | Yes, label only (investigated below) | Same text column, different label: pandas 3.x prints `str` where pandas 2.x printed `object`. Not a datetime either way |
 | Earliest `txn_date` | 2020-01-01 | 2020-01-01 | Yes | |
 | Latest `txn_date` | 2024-12-30 | 2024-12-30 | Yes | |
 | Duplicate `txn_id` count | 0 | 0 | Yes | |
@@ -29,7 +29,17 @@ Script ran without errors on the first attempt. No debugging needed.
 | Profile file created | Yes | Yes | Yes | `hw02/hw02_profile.txt` |
 | Chart files created (3) | Yes | Yes | Yes | All three saved in `hw02/charts/` |
 
-No true mismatches, so no Claude Cowork investigation was needed for this section.
+No true mismatches. The only value that differed in form was `txn_date` (`str` instead of `object`), so I investigated it with Claude to confirm it's a labeling difference and not a problem with how the data loaded.
+
+### Investigation: `txn_date` shows `str` instead of `object`
+
+**Excerpt from the Claude conversation (2026-09-24):**
+
+> **Me:** The benchmark says `txn_date` should be stored as `object`, but my script printed `str`. Is that a mismatch?
+>
+> **Claude:** Newer versions of pandas (3.x) label text columns `str` instead of `object`. It's still stored as text, not a date, so the point of that check still holds.
+
+**How I confirmed it:** I loaded the column again with pandas 3.0.6. `txn_date` shows as `str`, `pd.api.types.is_string_dtype` is `True`, and `is_datetime64_any_dtype` is `False`. Then I turned on pandas 2 behavior with `pd.set_option("future.infer_string", False)` and loaded it again, and the same column came back as `object`. The benchmark was written with pandas 2 and my environment uses pandas 3, so the label is different but the finding is the same: the dates are text and need `pd.to_datetime` before any date math.
 
 ---
 

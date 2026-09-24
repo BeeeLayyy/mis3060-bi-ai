@@ -1,9 +1,8 @@
-```markdown
 # MIS3060 Business Intelligence with AI
 Villanova School of Business — Fall 2026
 
-**Student:** [Brandon Le]
-**GitHub:** [BeeeLayyy]
+**Student:** Brandon Le
+**GitHub:** [BeeeLayyy](https://github.com/BeeeLayyy)
 
 ## About This Repository
 This repository contains all lab exercises, homework assignments, and project
@@ -27,8 +26,3 @@ Claude Desktop · Claude Code · Python · Power BI · Streamlit · GitHub
 | HW1 | Prompt Engineering | ✓ Complete |
 | HW2 | EDA Script | ✓ Complete |
 | ... | ... | ... |
-```
-
-**Deliverable:** Your `README.md` must be visible and rendered at `github.com/[username]/mis3060-bi-ai`.
-
----
