@@ -25,7 +25,7 @@ Claude Desktop · Claude Code · Python · Power BI · Streamlit · GitHub
 | Assignment | Topic | Status |
 |---|---|---|
 | HW1 | Prompt Engineering | ✓ Complete |
-| HW2 | EDA Script | Pending |
+| HW2 | EDA Script | ✓ Complete |
 | ... | ... | ... |
 ```
 
