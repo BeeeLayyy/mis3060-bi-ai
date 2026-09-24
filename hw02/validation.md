@@ -129,6 +129,8 @@ Review done in a new Claude chat, separate from the session that generated the s
    1. Data-entry or system sign error. The share quantity was recorded with the wrong sign, so these are really normal Buys that should be positive.
    2. Legitimate reversal or correction. A Buy was canceled or corrected after execution, and the system booked the reversal as a negative Buy instead of using a separate transaction type.
 
+   To figure out which is more likely, I checked whether each negative Buy had a matching earlier positive Buy with the same client, security, and share count. That check found 0 matches, which makes the reversal explanation much less likely, since a reversal should cancel out an original trade. The sign error explanation fits better. Next, I'd check whether the dollar amount on those rows is also negative (which would suggest a deliberate entry) and whether the negatives cluster by date or account (which would suggest a systematic data feed issue), then confirm with the data owner how corrections are booked.
+
 ### Cross-validation
 
 6. Prompt A (direct filter) returned **83,556**. Prompt B (total 298,772 minus 215,216 non-Buy rows) returned **83,556**.
