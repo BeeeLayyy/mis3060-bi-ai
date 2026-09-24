@@ -1,0 +1,13 @@
+# Virtual environment
+.venv/
+
+# Data files (raw data stays out of the repo)
+*.csv
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Secrets and OS files
+.env
+.DS_Store
