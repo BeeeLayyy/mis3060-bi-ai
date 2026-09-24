@@ -50,11 +50,55 @@ Review done in a new Claude chat, separate from the session that generated the s
    - Box plot: matches. One horizontal box per type in the same order as the grouped table. Advisory Fee is much lower and tighter than the other types, with outliers stretching right, which fits Claude's point about fee outliers.
    - Scatter: matches Claude's description (only Buy, Sell, Dividend plotted, gray line at zero). One thing Claude didn't predict: the negative-share Buys form a separate cluster to the left of zero with positive amounts, a mirror image of the main group. Sells also plot on top of Buys, so most Buy points are hidden on the positive side.
 
-6. **Follow-up question and answer:**
+6. **Follow-up question and answer** (pasted from the review chat):
 
-   > **Me:** You said the 836 negative-share Buys are errors. Couldn't some of them be legitimate reversal or correction entries that cancel an earlier Buy? How would I tell the difference?
+   **My question:** You said the 836 negative-share Buys are errors. Couldn't some of them be legitimate reversal or correction entries that cancel an earlier Buy? How would I tell the difference?
+
+   **Claude's answer:**
+
+   > Yes, they could be. I jumped to "errors" too fast; "unexplained" is more accurate. Negative quantities are a common way to book a reversal. The dataset has no reversal flag or original_txn_id column, though, so you have to infer it from the data.
    >
-   > **Claude:** Yes, they could be. It said it jumped to "errors" too fast and "unexplained" is more accurate. A true reversal should mirror an earlier Buy: same client_id and security_id, same absolute share count and amount, dated on or after the original. It gave code to merge negative Buys against positive Buys on client, security, and absolute shares and count how many have a match. If most match within a few days, they're reversals; if few or none match, they're bad data. It also pointed out that the amounts are positive on these rows, so even real reversals would be miscounted as extra purchases, and that 836 is almost exactly 1% of Buys, which could mean deliberately injected noise. Real reversals tend to cluster by advisor or date.
+   > **What a reversal would look like**
+   >
+   > A true reversal should mirror an earlier Buy:
+   >
+   > - same client_id and security_id
+   > - same absolute share count (and usually the same price and amount)
+   > - dated on or after the original, usually within days
+   >
+   > Example: txn 5001 is a Buy on 2023-03-10: client 42, security 17, 150.25 shares at $80 = $12,020. If txn 5090 on 2023-03-12 is a Buy for client 42, security 17, -150.25 shares, $12,020, that's almost certainly a cancel. If there's no matching positive Buy anywhere, it's a bad row.
+   >
+   > **How to check**
+   >
+   > ```python
+   > buys = df[df["txn_type"] == "Buy"].copy()
+   > buys["txn_date"] = pd.to_datetime(buys["txn_date"])
+   > buys["abs_shares"] = buys["shares"].abs().round(2)
+   >
+   > neg = buys[buys["shares"] < 0]
+   > pos = buys[buys["shares"] > 0]
+   >
+   > m = neg.merge(pos, on=["client_id", "security_id", "abs_shares"],
+   >               suffixes=("_rev", "_orig"))
+   > m = m[m["txn_date_orig"] <= m["txn_date_rev"]]
+   > m["days_apart"] = (m["txn_date_rev"] - m["txn_date_orig"]).dt.days
+   >
+   > print("Negatives with a matching earlier Buy:", m["txn_id_rev"].nunique(), "of", len(neg))
+   > print(m["days_apart"].describe())
+   > print("Amount matches:", (m["amount_rev"].round(2) == m["amount_orig"].round(2)).mean())
+   > ```
+   >
+   > **How to read the results**
+   >
+   > - Most negatives match, usually within a few days, with equal amounts: they're reversals. Net them against the originals, or drop both rows.
+   > - Few or none match: they're bad data. Shares are recorded to 2 decimals across 500 securities and 2,700 clients, so accidental matches are very unlikely. Even a handful of matches means something.
+   > - A mix: treat the matched rows as reversals and the rest as errors, and document both counts.
+   >
+   > **Two other clues**
+   >
+   > Amount is positive on these rows. If a reversal carries a positive amount, a naive "Buy = money out" calculation counts it as a second purchase instead of cancelling the first. So even if they are real reversals, you'd need to handle them explicitly.
+   >
+   > The pattern looks random. 836 is almost exactly 1% of Buys. If the negatives are spread evenly across dates, advisors, and securities, that looks like deliberately injected noise, which is common in class datasets built to test EDA. Check with neg["advisor_id"].value_counts() and neg["txn_date"].dt.year.value_counts(). Real reversals tend to cluster around specific advisors, operations issues, or dates.
 
 ---
 
