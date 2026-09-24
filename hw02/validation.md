@@ -106,7 +106,7 @@ Review done in a new Claude chat, separate from the session that generated the s
 
 ### Business-reasonableness
 
-1. I'd expect Deposits, Withdrawals, and Fees to have no security. They're just cash moving in or out of an account, so there's no stock involved and nothing to fill in for security_id, shares, or price. To check if they add up to 101,597, I'd filter to rows where all three columns are null and run value_counts on txn_type. If those three types make up all the null rows, the nulls are expected and not actually missing data. If another type shows up, like dividends, that's something to look into.
+1. I'd expect Deposits, Withdrawals, and Fees to have no security. They're just cash moving in or out of an account, so there's no stock involved and nothing to fill in for security_id, shares, or price. To check if they add up to 101,597, I'd filter to rows where all three columns are null and run value_counts on txn_type. If those three types make up all the null rows, the nulls are expected and not actually missing data. If another type shows up, like dividends, that's something to look into. And they do add up: Deposit (35,981) + Withdrawal (29,850) + Advisory Fee (35,766) = 101,597, which matches the null count exactly.
 
 2. It means clients are mostly adding to their investments over time instead of pulling out. That could come from new deposits getting invested, dividend reinvestment, or clients buying in smaller chunks on a regular basis. For a wealth firm, that's generally a good sign of growing assets. But this only compares the number of trades, not the dollar amounts, so I'd want to compare total dollars bought vs. sold before drawing a real conclusion.
 
