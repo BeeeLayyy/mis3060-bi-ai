@@ -1,13 +1,48 @@
-# Virtual environment
-.venv/
-
-# Data files (raw data stays out of the repo)
-*.csv
-
-# Python cache
+# ── Python ──────────────────────────────────────────────
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+build/
+dist/
 
-# Secrets and OS files
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# ── Jupyter ─────────────────────────────────────────────
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# ── Environment / secrets ──────────────────────────────
 .env
+.env.*
+*.pem
+*.key
+secrets.*
+
+# ── Data (often large / sensitive — track intentionally) ─
+02_Data/**
+!02_Data/.gitkeep
+*.csv
+*.xlsx
+*.parquet
+*.h5
+*.pkl
+*.db
+*.sqlite3
+
+# ── OS / editor cruft ───────────────────────────────────
 .DS_Store
+Thumbs.db
+.vscode/
+*.swp
+
+# ── Logs / misc ─────────────────────────────────────────
+*.log
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints
