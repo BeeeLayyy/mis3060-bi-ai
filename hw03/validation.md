@@ -57,3 +57,5 @@ The 4 `NOT_FOUND` rows in `executive_events.csv` were investigated. Each is an I
 - JPM 2025-12-08 and 2026-01-22: CEO compensation (James Dimon's annual pay).
 
 They are kept as rows so those filings are not silently dropped.
+
+The zero-event edge case was not triggered in this run: all five companies had at least one Item 5.02 filing in the past 12 months. The script handles it by printing `[Ticker]: No executive events in past 12 months` and moving on to the next company (see the `if not filings:` branch in `main()` of `hw03_executives.py`).
