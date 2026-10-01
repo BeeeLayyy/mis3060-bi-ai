@@ -1,0 +1,33 @@
+company,ticker,cik,filing_date,event_type,person_name,title,effective_date,earnings_filing_date,earnings_period,earnings_revenue_reported,earnings_eps_diluted,earnings_net_income,days_to_nearest_earnings,event_timing
+Apple Inc.,AAPL,0000320193,2026-04-20,departure,Tim Cook,Chief Executive Officer,"September 1, 2026",2026-04-30,fiscal 2026 second quarter,111200.0,2.01,29578.0,10,before earnings
+Apple Inc.,AAPL,0000320193,2026-04-20,appointment,John Ternus,Chief Executive Officer,"September 1, 2026",2026-04-30,fiscal 2026 second quarter,111200.0,2.01,29578.0,10,before earnings
+Apple Inc.,AAPL,0000320193,2026-04-20,appointment,Art Levinson,Lead Independent Director,"September 1, 2026",2026-04-30,fiscal 2026 second quarter,111200.0,2.01,29578.0,10,before earnings
+Apple Inc.,AAPL,0000320193,2026-01-02,appointment,Ben Borders,Principal Accounting Officer,"January 1, 2026",2026-01-29,fiscal 2026 first quarter,143800.0,2.84,42097.0,27,before earnings
+Apple Inc.,AAPL,0000320193,2026-01-02,departure,Chris Kondo,Principal Accounting Officer,"January 1, 2026",2026-01-29,fiscal 2026 first quarter,143800.0,2.84,42097.0,27,before earnings
+Apple Inc.,AAPL,0000320193,2025-12-05,appointment,Jennifer Newstead,General Counsel,NOT_FOUND,2025-10-30,fiscal 2025 fourth quarter,102500.0,1.85,27466.0,36,after earnings
+Apple Inc.,AAPL,0000320193,2025-12-05,departure,Kate Adams,General Counsel,NOT_FOUND,2025-10-30,fiscal 2025 fourth quarter,102500.0,1.85,27466.0,36,after earnings
+Microsoft Corporation,MSFT,0000789019,2026-06-05,departure,Reid Hoffman,Director,NOT_FOUND,2026-04-29,"quarter ended March 31, 2026",82900.0,4.27,31800.0,37,after earnings
+Microsoft Corporation,MSFT,0000789019,2026-05-14,appointment,Carmine Di Sibio,Director,"May 13, 2026",2026-04-29,"quarter ended March 31, 2026",82900.0,4.27,31800.0,15,after earnings
+Microsoft Corporation,MSFT,0000789019,2025-12-08,NOT_FOUND,NOT_FOUND,NOT_FOUND,NOT_FOUND,2025-10-29,"quarter ended September 30, 2025",77700.0,3.72,27700.0,40,after earnings
+NVIDIA Corporation,NVDA,0001045810,2026-07-02,departure,Ajay K. Puri,Executive Vice President,NOT_FOUND,2026-05-20,q1fy27,81600.0,2.39,58321.0,43,after earnings
+NVIDIA Corporation,NVDA,0001045810,2026-07-02,appointment,Nicholas Parker,Executive Vice President,NOT_FOUND,2026-05-20,q1fy27,81600.0,2.39,58321.0,43,after earnings
+NVIDIA Corporation,NVDA,0001045810,2026-05-08,appointment,Suzanne Nora Johnson,Director,"July 13, 2026",2026-05-20,q1fy27,81600.0,2.39,58321.0,12,before earnings
+NVIDIA Corporation,NVDA,0001045810,2026-04-27,departure,Donald Robertson,Vice President,"May 4, 2026",2026-05-20,q1fy27,81600.0,2.39,58321.0,23,before earnings
+NVIDIA Corporation,NVDA,0001045810,2026-04-27,appointment,Scott Gawel,NOT_FOUND,"May 4, 2026",2026-05-20,q1fy27,81600.0,2.39,58321.0,23,before earnings
+NVIDIA Corporation,NVDA,0001045810,2026-03-06,NOT_FOUND,NOT_FOUND,NOT_FOUND,NOT_FOUND,2026-02-25,q4fy26,68100.0,1.76,42960.0,9,after earnings
+NVIDIA Corporation,NVDA,0001045810,2026-01-23,departure,Persis Drell,Director,2026-01-23,2026-02-25,q4fy26,68100.0,1.76,42960.0,33,before earnings
+JPMorgan Chase & Co.,JPM,0000019617,2026-06-25,appointment,Doug Petno,NOT_FOUND,NOT_FOUND,2026-07-14,SECOND QUARTER 2026,57300.0,7.7,21200.0,19,before earnings
+JPMorgan Chase & Co.,JPM,0000019617,2026-06-25,appointment,Troy Rohrbaugh,President,2026-06-25,2026-07-14,SECOND QUARTER 2026,57300.0,7.7,21200.0,19,before earnings
+JPMorgan Chase & Co.,JPM,0000019617,2026-06-25,departure,Marianne Lake,NOT_FOUND,NOT_FOUND,2026-07-14,SECOND QUARTER 2026,57300.0,7.7,21200.0,19,before earnings
+JPMorgan Chase & Co.,JPM,0000019617,2026-01-22,NOT_FOUND,NOT_FOUND,NOT_FOUND,NOT_FOUND,2026-01-13,FOURTH QUARTER 2025,45800.0,4.63,13000.0,9,after earnings
+JPMorgan Chase & Co.,JPM,0000019617,2025-12-08,NOT_FOUND,NOT_FOUND,NOT_FOUND,NOT_FOUND,2026-01-13,FOURTH QUARTER 2025,45800.0,4.63,13000.0,36,before earnings
+Walmart Inc.,WMT,0000104169,2026-01-16,appointment,David Guggina,Executive Vice President,"February 1, 2026",2026-02-19,Q4 FY26,190700.0,0.53,4237.0,34,before earnings
+Walmart Inc.,WMT,0000104169,2026-01-16,departure,John Furner,President and Chief Executive Officer,"February 1, 2026",2026-02-19,Q4 FY26,190700.0,0.53,4237.0,34,before earnings
+Walmart Inc.,WMT,0000104169,2026-01-16,departure,Kathryn McLay,Executive Vice President,"February 1, 2026",2026-02-19,Q4 FY26,190700.0,0.53,4237.0,34,before earnings
+Walmart Inc.,WMT,0000104169,2026-01-16,appointment,Christopher Nicholas,Executive Vice President,"February 1, 2026",2026-02-19,Q4 FY26,190700.0,0.53,4237.0,34,before earnings
+Walmart Inc.,WMT,0000104169,2026-01-16,appointment,Latriece Watkins,Executive Vice President,"February 1, 2026",2026-02-19,Q4 FY26,190700.0,0.53,4237.0,34,before earnings
+Walmart Inc.,WMT,0000104169,2026-01-08,appointment,Shishir Mehrotra,Director,NOT_FOUND,2026-02-19,Q4 FY26,190700.0,0.53,4237.0,42,before earnings
+Walmart Inc.,WMT,0000104169,2025-11-14,departure,C. Douglas McMillon,President And Chief Executive Officer,"January 31, 2026",2025-11-20,Q3 FY26,179500.0,0.77,6143.0,6,same week
+Walmart Inc.,WMT,0000104169,2025-11-14,both,John R. Furner,President And Chief Executive Officer,"February 1, 2026",2025-11-20,Q3 FY26,179500.0,0.77,6143.0,6,same week
+Walmart Inc.,WMT,0000104169,2025-10-22,appointment,Dwayne Milum,Senior Vice President,"February 1, 2026",2025-11-20,Q3 FY26,179500.0,0.77,6143.0,29,before earnings
+Walmart Inc.,WMT,0000104169,2025-10-22,appointment,David Chojnowski,Senior Vice President,"February 1, 2026",2025-11-20,Q3 FY26,179500.0,0.77,6143.0,29,before earnings

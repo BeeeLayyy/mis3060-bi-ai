@@ -1,0 +1,33 @@
+company,ticker,cik,filing_date,event_type,person_name,title,effective_date
+Apple Inc.,AAPL,0000320193,2026-04-20,departure,Tim Cook,Chief Executive Officer,"September 1, 2026"
+Apple Inc.,AAPL,0000320193,2026-04-20,appointment,John Ternus,Chief Executive Officer,"September 1, 2026"
+Apple Inc.,AAPL,0000320193,2026-04-20,appointment,Art Levinson,Lead Independent Director,"September 1, 2026"
+Apple Inc.,AAPL,0000320193,2026-01-02,appointment,Ben Borders,Principal Accounting Officer,"January 1, 2026"
+Apple Inc.,AAPL,0000320193,2026-01-02,departure,Chris Kondo,Principal Accounting Officer,"January 1, 2026"
+Apple Inc.,AAPL,0000320193,2025-12-05,appointment,Jennifer Newstead,General Counsel,NOT_FOUND
+Apple Inc.,AAPL,0000320193,2025-12-05,departure,Kate Adams,General Counsel,NOT_FOUND
+Microsoft Corporation,MSFT,0000789019,2026-06-05,departure,Reid Hoffman,Director,NOT_FOUND
+Microsoft Corporation,MSFT,0000789019,2026-05-14,appointment,Carmine Di Sibio,Director,"May 13, 2026"
+Microsoft Corporation,MSFT,0000789019,2025-12-08,NOT_FOUND,NOT_FOUND,NOT_FOUND,NOT_FOUND
+NVIDIA Corporation,NVDA,0001045810,2026-07-02,departure,Ajay K. Puri,Executive Vice President,NOT_FOUND
+NVIDIA Corporation,NVDA,0001045810,2026-07-02,appointment,Nicholas Parker,Executive Vice President,NOT_FOUND
+NVIDIA Corporation,NVDA,0001045810,2026-05-08,appointment,Suzanne Nora Johnson,Director,"July 13, 2026"
+NVIDIA Corporation,NVDA,0001045810,2026-04-27,departure,Donald Robertson,Vice President,"May 4, 2026"
+NVIDIA Corporation,NVDA,0001045810,2026-04-27,appointment,Scott Gawel,NOT_FOUND,"May 4, 2026"
+NVIDIA Corporation,NVDA,0001045810,2026-03-06,NOT_FOUND,NOT_FOUND,NOT_FOUND,NOT_FOUND
+NVIDIA Corporation,NVDA,0001045810,2026-01-23,departure,Persis Drell,Director,2026-01-23
+JPMorgan Chase & Co.,JPM,0000019617,2026-06-25,appointment,Doug Petno,NOT_FOUND,NOT_FOUND
+JPMorgan Chase & Co.,JPM,0000019617,2026-06-25,appointment,Troy Rohrbaugh,President,2026-06-25
+JPMorgan Chase & Co.,JPM,0000019617,2026-06-25,departure,Marianne Lake,NOT_FOUND,NOT_FOUND
+JPMorgan Chase & Co.,JPM,0000019617,2026-01-22,NOT_FOUND,NOT_FOUND,NOT_FOUND,NOT_FOUND
+JPMorgan Chase & Co.,JPM,0000019617,2025-12-08,NOT_FOUND,NOT_FOUND,NOT_FOUND,NOT_FOUND
+Walmart Inc.,WMT,0000104169,2026-01-16,appointment,David Guggina,Executive Vice President,"February 1, 2026"
+Walmart Inc.,WMT,0000104169,2026-01-16,departure,John Furner,President and Chief Executive Officer,"February 1, 2026"
+Walmart Inc.,WMT,0000104169,2026-01-16,departure,Kathryn McLay,Executive Vice President,"February 1, 2026"
+Walmart Inc.,WMT,0000104169,2026-01-16,appointment,Christopher Nicholas,Executive Vice President,"February 1, 2026"
+Walmart Inc.,WMT,0000104169,2026-01-16,appointment,Latriece Watkins,Executive Vice President,"February 1, 2026"
+Walmart Inc.,WMT,0000104169,2026-01-08,appointment,Shishir Mehrotra,Director,NOT_FOUND
+Walmart Inc.,WMT,0000104169,2025-11-14,departure,C. Douglas McMillon,President And Chief Executive Officer,"January 31, 2026"
+Walmart Inc.,WMT,0000104169,2025-11-14,both,John R. Furner,President And Chief Executive Officer,"February 1, 2026"
+Walmart Inc.,WMT,0000104169,2025-10-22,appointment,Dwayne Milum,Senior Vice President,"February 1, 2026"
+Walmart Inc.,WMT,0000104169,2025-10-22,appointment,David Chojnowski,Senior Vice President,"February 1, 2026"
