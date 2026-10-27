@@ -15,7 +15,7 @@ import re
 
 import pandas as pd
 
-from common import (ALLOWED, EXPECTED_SHAPE, PRIMARY_KEY, RELATIONSHIPS, REPORT_DIR,
+from common import (ALLOWED, DUP_KEY, EXPECTED_SHAPE, PRIMARY_KEY, RELATIONSHIPS, REPORT_DIR,
                     TABLES, TYPES, US_STATES, ensure_dirs, parse_ok, raw_dir,
                     read_all, to_num)
 
@@ -99,10 +99,10 @@ def column_checks(T):
                 n = nb.str.contains("%").sum()
                 add(name, c, "1 column", "percent strings mixed with decimals", "ERROR", n,
                     nb[nb.str.contains("%")].head(3).tolist())
-            if typ == "float" and nb.str.contains(r"[eE]-?\d").any():
-                n = nb.str.contains(r"[eE]-?\d").sum()
+            if typ == "float" and nb.str.contains(r"[eE][-+]?\d").any():
+                n = nb.str.contains(r"[eE][-+]?\d").sum()
                 add(name, c, "1 column", "scientific notation", "INFO", n,
-                    nb[nb.str.contains(r"[eE]-?\d")].head(3).tolist(),
+                    nb[nb.str.contains(r"[eE][-+]?\d")].head(3).tolist(),
                     "parses fine as float; only a display/format issue")
             blanks = (col.str.strip() == "").sum()
             if blanks:
@@ -166,8 +166,7 @@ def single_table_checks(T):
             "ERROR" if d else "INFO", d)
 
     c = T["dim_client"]
-    key = ["first_name", "age", "city", "state", "zip_code", "initial_aum", "client_since",
-           "advisor_id"]
+    key = DUP_KEY
     g = c[c.duplicated(key, keep=False)]
     pairs = g.groupby(key)["client_id"].apply(list)
     n_near = int((g.groupby(key).size() - 1).sum())
@@ -189,7 +188,7 @@ def single_table_checks(T):
         "INFO", s["name"].duplicated().sum(), s.loc[s["name"].duplicated(), "name"].tolist())
 
     d = T["dim_date"]
-    dt = pd.to_datetime(d["date"])
+    dt = pd.to_datetime(d["date"], errors="coerce")
     add("dim_date", "day_of_week", "2 single-table", "day_of_week disagrees with date",
         "ERROR", (dt.dt.day_name() != d["day_of_week"]).sum())
     add("dim_date", "is_month_end", "2 single-table", "is_month_end disagrees with date",
@@ -228,7 +227,7 @@ def single_table_checks(T):
     add("fact_portfolio_snapshot", "return_ytd", "2 single-table",
         "percent-string rows that reconcile after /100 (rounding tol 5e-5)", "INFO",
         (pct & (gap.abs() <= 6e-5)).sum())
-    sdt = pd.to_datetime(sn["snapshot_date"])
+    sdt = pd.to_datetime(sn["snapshot_date"], errors="coerce")
     add("fact_portfolio_snapshot", "year", "2 single-table", "year/month disagree with date",
         "ERROR", ((sdt.dt.year.astype(str) != sn["year"]) |
                   (sdt.dt.month.astype(str) != sn["month"])).sum())
@@ -238,7 +237,7 @@ def single_table_checks(T):
 
 def ri_checks(T):
     for fact, fk, dim, pk in RELATIONSHIPS:
-        fv = T[fact][fk].str.replace(r"\.0$", "", regex=True)
+        fv = T[fact][fk].str.strip()  # compare raw text, exactly as a BI join would
         nonblank = fv != ""
         orphan = nonblank & ~fv.isin(set(T[dim][pk]))
         add(fact, fk, "3 referential", f"{fk} -> {dim}.{pk} orphans",
@@ -276,10 +275,11 @@ def business_checks(T):
 
     f = T["fact_fees"]
     key = sn["client_id"] + "|" + sn["snapshot_date"]
-    aum = pd.Series(sn["aum"].values, index=key)
+    aum = pd.Series(to_num(sn["aum"]).values, index=key)
+    aum = aum[~aum.index.duplicated()]
     fk = f["client_id"] + "|" + f["fee_date"]
     add("fact_fees", "aum_basis", "4 cross-table", "aum_basis != snapshot aum same client-month",
-        "ERROR", (fk.map(aum) != f["aum_basis"]).sum())
+        "ERROR", (fk.map(aum) != to_num(f["aum_basis"])).sum())
     with_facts = set(f["client_id"]) | set(sn["client_id"]) | set(T["fact_transactions"]["client_id"])
     add("dim_client", "client_id", "4 cross-table", "clients with no fact rows at all", "WARN",
         (~c.index.isin(with_facts)).sum(),

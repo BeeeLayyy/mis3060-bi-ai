@@ -39,7 +39,7 @@ def check_referential_integrity(fact_df, fact_key, dim_df, dim_key):
     n = len(present)
     return {
         "rows": len(fk),
-        "match_rate": round(100 * (n - orphan.sum()) / n, 4) if n else 100.0,
+        "match_rate": round(100 * (n - orphan.sum()) / n, 4) if n else float("nan"),
         "orphan_rows": int(orphan.sum()),
         "distinct_orphan_keys": int(present[orphan].nunique()),
         "null_key_rate": round(100 * null.mean(), 4),
@@ -137,6 +137,8 @@ def iqr(T):
     for t, col in [("fact_transactions", "amount"), ("fact_fees", "amount"),
                    ("fact_portfolio_snapshot", "aum"), ("fact_portfolio_snapshot", "return_ytd")]:
         v = to_num(T[t][col]).dropna()
+        if v.empty:
+            continue
         q1, q3 = v.quantile([0.25, 0.75])
         lo, hi = q1 - 1.5 * (q3 - q1), q3 + 1.5 * (q3 - q1)
         flagged = ((v < lo) | (v > hi)).sum()

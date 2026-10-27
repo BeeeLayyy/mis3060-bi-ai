@@ -31,6 +31,10 @@ def raw_dir():
     )
 
 
+# Near-duplicate client key (used by both 01 and 02)
+DUP_KEY = ["first_name", "age", "city", "state", "zip_code", "initial_aum",
+           "client_since", "advisor_id"]
+
 CLEAN_DIR = os.path.join(HW_DIR, "data", "clean")
 AUDIT_DIR = os.path.join(HW_DIR, "data", "audit")
 REPORT_DIR = os.path.join(HW_DIR, "reports")
@@ -160,7 +164,7 @@ def parse_ok(series, typ):
     if typ == "int":
         return s.str.fullmatch(r"-?\d+")
     if typ == "float":
-        return s.str.fullmatch(r"-?\d+(\.\d+)?([eE]-?\d+)?")
+        return s.str.fullmatch(r"-?\d+(\.\d+)?([eE][-+]?\d+)?")
     if typ == "date":
         return pd.to_datetime(s, format="%Y-%m-%d", errors="coerce").notna()
     if typ == "bool":

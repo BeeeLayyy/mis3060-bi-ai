@@ -11,11 +11,13 @@ Run:      python hw04/scripts/02_clean.py "path/to/Wildcat Capital"
 Author:   Brandon Le, MIS3060 (drafted with Claude)
 =====================================================================
 """
+import difflib
 import os
 
+import numpy as np
 import pandas as pd
 
-from common import (AUDIT_DIR, CLEAN_DIR, TABLES, US_STATES, ensure_dirs, raw_dir,
+from common import (AUDIT_DIR, CLEAN_DIR, DUP_KEY, PRIMARY_KEY, TABLES, US_STATES, ensure_dirs, raw_dir,
                     read_all, to_num)
 
 LOG, CHANGES, QUAR = [], [], {}
@@ -46,8 +48,14 @@ def quarantine(table, df, mask, reason, name):
 
 
 def fmt6(x):
+    """Rounded decimal for the %-string fix (source was already rounded)."""
     s = f"{x:.6f}"
     return "0.000000" if s == "-0.000000" else s
+
+
+def plain(x):
+    """Exact positional decimal, e.g. -1.9e-05 -> -0.000019 (no rounding)."""
+    return np.format_float_positional(x, trim="-")
 
 
 def main():
@@ -56,6 +64,7 @@ def main():
     print(f"Reading raw tables from: {folder}\n")
     T = read_all(folder)
     raw_rows = {t: len(df) for t, df in T.items()}
+    raw_keys = {t: sorted(df[PRIMARY_KEY[t]]) for t, df in T.items()}
 
     # ============================================================
     # dim_client
@@ -63,9 +72,7 @@ def main():
     c = T["dim_client"]
 
     # C1. Near-duplicate clients: same person, typo in last name, no facts
-    key = ["first_name", "age", "city", "state", "zip_code", "initial_aum",
-           "client_since", "advisor_id", "risk_profile", "client_tier",
-           "primary_account_type", "is_active"]
+    key = DUP_KEY  # same key as 01_profile.py
     c["_id"] = c["client_id"].astype(int)
     c = c.sort_values("_id")
     dup = c.duplicated(key, keep="first")
@@ -79,7 +86,7 @@ def main():
     last = c.set_index("client_id")["last_name"]
     for d_id, s_id in zip(c.loc[dup, "client_id"], matched):
         a, b = last[d_id], last[s_id]
-        assert b.startswith(a) or a.startswith(b) or abs(len(a) - len(b)) <= 2, (d_id, a, b)
+        assert difflib.SequenceMatcher(None, a, b).ratio() >= 0.8, (d_id, a, b)
     before = len(c)
     c.loc[dup, "matched_client_id"] = list(matched)
     c = quarantine("dim_client", c, dup, "near-duplicate of matched_client_id (last-name typo, no fact rows)",
@@ -135,6 +142,16 @@ def main():
     # ============================================================
     tx = T["fact_transactions"]
 
+    # T0. Orphan client_ids -> quarantine (raw rows, before any other edit)
+    valid = set(T["dim_client"]["client_id"])
+    m = ~tx["client_id"].isin(valid)
+    n = m.sum()
+    tx = quarantine("fact_transactions", tx, m, "client_id not in dim_client",
+                    "fact_transactions_orphan_client")
+    assert tx["client_id"].isin(valid).all()
+    log("fact_transactions", "orphan client_id", "quarantine", n,
+        "IDs cannot be mapped to any client; no evidence to repair")
+
     # T1. security_id stored as float text ("45.0") -> integer text
     m = tx["security_id"].str.fullmatch(r"\d+\.0")
     record_changes("fact_transactions", "txn_id", tx, m, "security_id",
@@ -156,15 +173,6 @@ def main():
     log("fact_transactions", "negative shares", "absolute value (sign error)", m.sum(),
         "amount = |shares| x price on every row confirms the magnitude")
 
-    # T3. Orphan client_ids -> quarantine
-    valid = set(T["dim_client"]["client_id"])
-    m = ~tx["client_id"].isin(valid)
-    n = m.sum()
-    tx = quarantine("fact_transactions", tx, m, "client_id not in dim_client",
-                    "fact_transactions_orphan_client")
-    assert tx["client_id"].isin(valid).all()
-    log("fact_transactions", "orphan client_id", "quarantine", n,
-        "IDs cannot be mapped to any client; no evidence to repair")
     T["fact_transactions"] = tx
 
     # ============================================================
@@ -185,14 +193,17 @@ def main():
     log("fact_portfolio_snapshot", "return_ytd percent strings", "divide by 100", m.sum(),
         f"each row reconciles to benchmark + alpha within rounding (max gap {gap.max():.1e})")
 
-    # S2. active_alpha_ytd in scientific notation -> fixed decimal
-    m = sn["active_alpha_ytd"].str.contains(r"[eE]")
-    newv = to_num(sn["active_alpha_ytd"]).map(fmt6)
-    assert (to_num(newv[m]) - to_num(sn.loc[m, "active_alpha_ytd"])).abs().max() < 5e-7
-    record_changes("fact_portfolio_snapshot", "snapshot_id", sn, m, "active_alpha_ytd", newv)
-    assert not sn["active_alpha_ytd"].str.contains(r"[eE]").any()
-    log("fact_portfolio_snapshot", "scientific notation in active_alpha_ytd",
-        "rewrite as fixed decimal", m.sum(), "value unchanged")
+    # S2. Scientific notation in any numeric column -> exact fixed decimal
+    for col in ["aum", "return_ytd", "benchmark_return_ytd", "active_alpha_ytd", "cash_pct"]:
+        m = sn[col].str.contains(r"[eE]")
+        if not m.any():
+            continue
+        newv = to_num(sn[col]).map(plain)
+        assert (to_num(newv[m]) == to_num(sn.loc[m, col])).all(), f"{col} value changed"
+        record_changes("fact_portfolio_snapshot", "snapshot_id", sn, m, col, newv)
+        assert not sn[col].str.contains(r"[eE]").any()
+        log("fact_portfolio_snapshot", f"scientific notation in {col}",
+            "rewrite as fixed decimal", m.sum(), "numeric value identical (asserted)")
 
     # S3. After S1, every row: return = benchmark + alpha
     gap = (to_num(sn["return_ytd"]) - to_num(sn["benchmark_return_ytd"]) - to_num(sn["active_alpha_ytd"])).abs()
@@ -213,10 +224,18 @@ def main():
     log("dim_advisor", "certifications = 'None'", "leave as is",
         (T["dim_advisor"]["certifications"] == "None").sum(), "means no certification, not missing")
     s = T["dim_security"]
+    assert ((s["sector"] == "") == (s["is_etf"] == "True")).all(), "sector blanks != ETFs"
+    assert ((s["expense_ratio_bps"] == "") == (s["is_etf"] == "False")).all()
     log("dim_security", "blank sector (ETFs) / blank expense ratio (stocks)", "leave as is",
         ((s["sector"] == "") | (s["expense_ratio_bps"] == "")).sum(),
         "legitimate structure: blanks line up exactly with is_etf")
     tx = T["fact_transactions"]
+    cashflow = tx["txn_type"].isin(["Deposit", "Withdrawal", "Advisory Fee"])
+    assert ((tx["security_id"] == "") == cashflow).all(), "blank security outside cash flows"
+    f = T["fact_fees"]
+    rec = (to_num(f["aum_basis"]) * to_num(f["bps_charged"]) / 10000 / 12).round(2)
+    assert ((rec - to_num(f["amount"])).abs() <= 0.011).all(), "fee amount does not reconcile"
+    assert not f.duplicated(["client_id", "fee_date", "fee_type"]).any()
     log("fact_transactions", "blank security/shares/price on cash flows", "leave as is",
         (tx["security_id"] == "").sum(), "deposits, withdrawals and fee debits have no security")
     log("dim_date", "is_trading_day ignores market holidays", "leave as is", 0,
@@ -232,6 +251,8 @@ def main():
         clean = len(T[t])
         print(f"  {t:<26} raw {raw_rows[t]:>7,} = clean {clean:>7,} + quarantined {q:>4,}")
         assert raw_rows[t] == clean + q, f"{t}: rows lost"
+        qkeys = [k for _, x in QUAR.get(t, []) for k in x[PRIMARY_KEY[t]]]
+        assert sorted(list(T[t][PRIMARY_KEY[t]]) + qkeys) == raw_keys[t], f"{t}: keys differ"
         T[t].to_csv(os.path.join(CLEAN_DIR, f"{t}.csv"), index=False)
     for t, items in QUAR.items():
         for name, q in items:
