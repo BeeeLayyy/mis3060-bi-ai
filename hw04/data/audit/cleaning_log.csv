@@ -1,0 +1,17 @@
+table,issue,action,rows_affected,note
+dim_client,near-duplicate client records,quarantine,25,2525 -> 2500; every duplicate has 0 fees/snapshots/transactions
+dim_client,state spelled out,standardize to 2-letter code,77,
+dim_client,blank risk_profile,fill from snapshot benchmark_id (1:1 mapping),75,"75 blank before, 0 left blank (no snapshot evidence); flag column risk_profile_imputed=1"
+dim_client,tier inconsistent with initial_aum,flag (leave value),126,flag_tier_aum_mismatch=1; tier may reflect household or current AUM
+fact_transactions,orphan client_id,quarantine,200,IDs cannot be mapped to any client; no evidence to repair
+fact_transactions,security_id stored as 45.0,convert to integer text,197044,format only; join key now matches dim_security.security_id
+fact_transactions,negative shares,absolute value (sign error),835,amount = |shares| x price on every row confirms the magnitude
+fact_portfolio_snapshot,return_ytd percent strings,divide by 100,300,each row reconciles to benchmark + alpha within rounding (max gap 5.0e-05)
+fact_portfolio_snapshot,scientific notation in return_ytd,rewrite as fixed decimal,135,numeric value identical (asserted)
+fact_portfolio_snapshot,scientific notation in active_alpha_ytd,rewrite as fixed decimal,756,numeric value identical (asserted)
+fact_portfolio_snapshot,"|return_ytd| > 100% or AUM at 1,000 floor",flag (leave value),1397,return appears computed from AUM including deposits/withdrawals; cannot recompute without inventing data
+dim_advisor,certifications = 'None',leave as is,6,"means no certification, not missing"
+dim_security,blank sector (ETFs) / blank expense ratio (stocks),leave as is,500,legitimate structure: blanks line up exactly with is_etf
+fact_transactions,blank security/shares/price on cash flows,leave as is,101528,"deposits, withdrawals and fee debits have no security"
+dim_date,is_trading_day ignores market holidays,leave as is,0,documented as a known limitation
+fact_fees,no defects found,none,0,"amount, aum_basis, keys all reconcile"
