@@ -21,7 +21,7 @@ Dimensions: Validity, Completeness, Uniqueness, Consistency, Accuracy/Plausibili
 | Field | |
 |---|---|
 | **Table / column** | dim_client / state |
-| **Evidence** | 78 rows use full names (Pennsylvania 25, Florida 15, New York 14, New Jersey 13, California 5, Illinois 4, Texas 2) while the rest use 2-letter codes. |
+| **Evidence** | 78 rows use full names (Pennsylvania 25, Florida 15, New York 14, New Jersey 13, California 5, Illinois 4, Texas 2) while the rest use 2-letter codes. One of the 78 belongs to a near-duplicate from #1, so 77 are changed in the clean table. |
 | **Dimension violated** | Consistency, Validity |
 | **Decision** | Standardize to USPS 2-letter code |
 | **Justification** | A state slicer would show "PA" and "Pennsylvania" as two states and split the region totals. |
@@ -41,7 +41,7 @@ Dimensions: Validity, Completeness, Uniqueness, Consistency, Accuracy/Plausibili
 | Field | |
 |---|---|
 | **Table / column** | dim_client / client_tier, initial_aum |
-| **Evidence** | 102 HNW clients have initial AUM under $1M; 25 UHNW clients are under $10M. |
+| **Evidence** | 127 clients: HNW with initial AUM under $1M or UHNW under $10M (126 after removing the near-duplicates). |
 | **Dimension violated** | Consistency, Accuracy/Plausibility |
 | **Decision** | Flag (`flag_tier_aum_mismatch`), leave values |
 | **Justification** | Tier is likely set on household or current AUM, which this extract does not have. Changing tier would be inventing data. |
@@ -71,7 +71,7 @@ Dimensions: Validity, Completeness, Uniqueness, Consistency, Accuracy/Plausibili
 | Field | |
 |---|---|
 | **Table / column** | fact_transactions / shares |
-| **Evidence** | 836 Buy rows have negative shares; no other type does. For all 836, amount = \|shares\| × price to the cent, and amount is positive. |
+| **Evidence** | 836 Buy rows have negative shares; no other type does. For all 836, amount = \|shares\| × price to the cent, and amount is positive. One of them is an orphan from #8, so 835 are corrected in the clean table. |
 | **Dimension violated** | Validity, Consistency |
 | **Decision** | Convert to absolute value |
 | **Justification** | Sign is carried by txn_type everywhere else. The stored amount confirms the magnitude, so only the sign is wrong. |
@@ -100,8 +100,8 @@ Dimensions: Validity, Completeness, Uniqueness, Consistency, Accuracy/Plausibili
 ## 10. fact_portfolio_snapshot — active_alpha_ytd in scientific notation
 | Field | |
 |---|---|
-| **Table / column** | fact_portfolio_snapshot / active_alpha_ytd |
-| **Evidence** | 756 values like "-1.9e-05". |
+| **Table / column** | fact_portfolio_snapshot / active_alpha_ytd, return_ytd |
+| **Evidence** | 756 active_alpha_ytd values like "-1.9e-05", plus 135 return_ytd values in the same format. |
 | **Dimension violated** | Consistency (format only) |
 | **Decision** | Rewrite as fixed decimal (-0.000019) |
 | **Justification** | Same value; some BI tools import "e" values as text. |
@@ -111,7 +111,7 @@ Dimensions: Validity, Completeness, Uniqueness, Consistency, Accuracy/Plausibili
 | Field | |
 |---|---|
 | **Table / column** | fact_portfolio_snapshot / return_ytd, aum |
-| **Evidence** | 977 rows have \|return_ytd\| above 100% (max 9,467%); some accounts sit at an AUM of exactly 1,000.00. Example: client 29 sits at AUM 1,000.00 with return -97.7% in early 2021, then shows +287% YTD by mid-2022. |
+| **Evidence** | 977 rows have \|return_ytd\| above 100% (max 9,467%); 420 rows sit at an AUM of exactly 1,000.00; 1,397 rows hit either rule. Example: client 29 sits at AUM 1,000.00 with return -97.7% in early 2021, then shows +287% YTD by mid-2022. |
 | **Dimension violated** | Accuracy/Plausibility |
 | **Decision** | Flag (`flag_extreme_return`), leave values |
 | **Justification** | Looks like return computed from AUM change including deposits and withdrawals. A true time-weighted return can't be rebuilt from this extract, so any fix would be invented. |
