@@ -1,0 +1,11 @@
+stage,reconciliation,rows_checked,rows_failed
+raw,fact_fees.amount = aum_basis x bps / 10000 / 12,122197,0
+raw,fact_transactions.amount = shares x price (signed shares),197175,836
+raw,"fact_fees.aum_basis = snapshot aum (same client, month)",122197,0
+raw,snapshot return_ytd = benchmark_return_ytd + active_alpha_ytd (tol 6e-5),129547,0
+raw,snapshot account_type = dim_client.primary_account_type,129547,0
+clean,fact_fees.amount = aum_basis x bps / 10000 / 12,122197,0
+clean,fact_transactions.amount = shares x price (signed shares),197044,0
+clean,"fact_fees.aum_basis = snapshot aum (same client, month)",122197,0
+clean,snapshot return_ytd = benchmark_return_ytd + active_alpha_ytd (tol 6e-5),129547,0
+clean,snapshot account_type = dim_client.primary_account_type,129547,0
