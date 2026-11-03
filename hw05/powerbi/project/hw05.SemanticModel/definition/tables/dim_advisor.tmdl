@@ -1,0 +1,77 @@
+table dim_advisor
+	lineageTag: 80770105-9faf-4e76-8cdc-b2e041b7ff8e
+
+	column advisor_id
+		dataType: int64
+		formatString: 0
+		lineageTag: c86f88e0-1e96-4381-98bf-49bd763df8d0
+		summarizeBy: none
+		sourceColumn: advisor_id
+
+		annotation SummarizationSetBy = User
+
+	column first_name
+		dataType: string
+		lineageTag: ce76463e-b5d4-4d02-b790-7648213554af
+		summarizeBy: none
+		sourceColumn: first_name
+
+		annotation SummarizationSetBy = User
+
+	column last_name
+		dataType: string
+		lineageTag: 3526b418-ecb2-4ee9-beeb-f3ef62b39c52
+		summarizeBy: none
+		sourceColumn: last_name
+
+		annotation SummarizationSetBy = User
+
+	column region
+		dataType: string
+		lineageTag: 210a0718-14de-4db7-81b7-86b482bb381e
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = User
+
+	column years_experience
+		dataType: int64
+		formatString: 0
+		lineageTag: 7a38cd86-8b57-40cf-8583-21f241b7a337
+		summarizeBy: none
+		sourceColumn: years_experience
+
+		annotation SummarizationSetBy = User
+
+	column aum_target_mm
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 2c242f98-d8d9-4b72-b66d-0c2eb4abd329
+		summarizeBy: none
+		sourceColumn: aum_target_mm
+
+		annotation SummarizationSetBy = User
+
+	column certifications
+		dataType: string
+		lineageTag: f7b76271-7c64-47e1-adb6-6a136de6a4d0
+		summarizeBy: none
+		sourceColumn: certifications
+
+		annotation SummarizationSetBy = User
+
+	measure 'dim_advisor rows' = COUNTROWS(dim_advisor)
+		formatString: #,0
+		lineageTag: 4fe2dbfa-62e7-4808-a5bb-67561073656c
+
+	partition dim_advisor = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_advisor.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"advisor_id", Int64.Type}, {"first_name", type text}, {"last_name", type text}, {"region", type text}, {"years_experience", Int64.Type}, {"aum_target_mm", type number}, {"certifications", type text}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

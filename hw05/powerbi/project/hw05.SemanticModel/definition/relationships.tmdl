@@ -1,0 +1,53 @@
+relationship 877bc3c8-0a5d-4018-a340-8d781da2ec73
+	fromColumn: fact_fees.client_id
+	toColumn: dim_client.client_id
+
+relationship 6ce96cbf-e581-4cb2-9293-c4d23de12c26
+	fromColumn: fact_fees.advisor_id
+	toColumn: dim_advisor.advisor_id
+
+relationship 1d76917a-97a8-4c45-b936-4cb2a4ed18f6
+	fromColumn: fact_fees.fee_date
+	toColumn: dim_date.date
+
+relationship 45c8592f-e66b-4517-9c0d-bf6f74734f7a
+	fromColumn: fact_portfolio_snapshot.client_id
+	toColumn: dim_client.client_id
+
+relationship a60f6bb3-9202-4e7c-8973-20860503ed4f
+	fromColumn: fact_portfolio_snapshot.advisor_id
+	toColumn: dim_advisor.advisor_id
+
+relationship bf12cf3c-f08c-4be6-a7cb-d9b07ca3450d
+	fromColumn: fact_portfolio_snapshot.benchmark_id
+	toColumn: dim_benchmark.benchmark_id
+
+relationship 8775b8d1-b088-4130-bc7c-49919dbf0250
+	fromColumn: fact_portfolio_snapshot.snapshot_date
+	toColumn: dim_date.date
+
+relationship 39810746-4a0f-4239-af05-28c260ceb1be
+	fromColumn: fact_transactions.client_id
+	toColumn: dim_client.client_id
+
+relationship a33162a0-2ec2-496a-97b8-aebd7066ae9c
+	fromColumn: fact_transactions.advisor_id
+	toColumn: dim_advisor.advisor_id
+
+relationship 7c856930-bdf7-4c7c-aeb4-71540ed491cb
+	fromColumn: fact_transactions.security_id
+	toColumn: dim_security.security_id
+
+relationship 1d00a610-3039-410b-b9dd-13b9401938c1
+	fromColumn: fact_transactions.txn_date
+	toColumn: dim_date.date
+
+relationship 5f8f30c6-c2b6-4185-a324-a556c9fd43e3
+	isActive: false
+	fromColumn: dim_client.advisor_id
+	toColumn: dim_advisor.advisor_id
+
+relationship cc851cc0-0d4d-4532-838e-ef8e8bc489f2
+	isActive: false
+	fromColumn: dim_security.benchmark_id
+	toColumn: dim_benchmark.benchmark_id

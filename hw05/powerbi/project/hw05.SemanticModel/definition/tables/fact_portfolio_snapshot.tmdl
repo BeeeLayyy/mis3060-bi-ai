@@ -1,0 +1,143 @@
+table fact_portfolio_snapshot
+	lineageTag: d450af48-b120-47fe-82d2-5c28bf4e333d
+
+	column snapshot_id
+		dataType: int64
+		formatString: 0
+		lineageTag: e7f3171b-2cce-4d8b-af72-535cf97f50f3
+		summarizeBy: none
+		sourceColumn: snapshot_id
+
+		annotation SummarizationSetBy = User
+
+	column client_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 43ab5641-a230-445c-ac3e-517391845e49
+		summarizeBy: none
+		sourceColumn: client_id
+
+		annotation SummarizationSetBy = User
+
+	column advisor_id
+		dataType: int64
+		formatString: 0
+		lineageTag: b60f076b-9e2d-4bed-8221-10d832e6bdf6
+		summarizeBy: none
+		sourceColumn: advisor_id
+
+		annotation SummarizationSetBy = User
+
+	column benchmark_id
+		dataType: int64
+		formatString: 0
+		lineageTag: a312559d-3db9-4c82-a388-e3f3d96e536a
+		summarizeBy: none
+		sourceColumn: benchmark_id
+
+		annotation SummarizationSetBy = User
+
+	column snapshot_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: bbaa8324-eb13-4f03-a832-3ed81ecf0905
+		summarizeBy: none
+		sourceColumn: snapshot_date
+
+		annotation SummarizationSetBy = User
+
+	column year
+		dataType: int64
+		formatString: 0
+		lineageTag: cb40816c-0f42-404e-b35c-81f5ba7f3a66
+		summarizeBy: none
+		sourceColumn: year
+
+		annotation SummarizationSetBy = User
+
+	column month
+		dataType: int64
+		formatString: 0
+		lineageTag: 721715d8-e623-494b-86b3-329ba62fd18c
+		summarizeBy: none
+		sourceColumn: month
+
+		annotation SummarizationSetBy = User
+
+	column aum
+		dataType: double
+		formatString: #,0.00
+		lineageTag: af45488a-de50-4fa4-b211-1168a6ebadb8
+		summarizeBy: none
+		sourceColumn: aum
+
+		annotation SummarizationSetBy = User
+
+	column return_ytd
+		dataType: double
+		formatString: #,0.00
+		lineageTag: e95ff6a5-cb5c-43bb-80cf-678b13d18617
+		summarizeBy: none
+		sourceColumn: return_ytd
+
+		annotation SummarizationSetBy = User
+
+	column benchmark_return_ytd
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 2adb4988-611e-491e-936e-fa4f047f74b4
+		summarizeBy: none
+		sourceColumn: benchmark_return_ytd
+
+		annotation SummarizationSetBy = User
+
+	column active_alpha_ytd
+		dataType: double
+		formatString: #,0.00
+		lineageTag: eed47197-35e2-421e-a5f7-fcbc758170df
+		summarizeBy: none
+		sourceColumn: active_alpha_ytd
+
+		annotation SummarizationSetBy = User
+
+	column cash_pct
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 88338444-7ecd-4346-b7dd-917286bed0cb
+		summarizeBy: none
+		sourceColumn: cash_pct
+
+		annotation SummarizationSetBy = User
+
+	column account_type
+		dataType: string
+		lineageTag: 79488f0d-e043-4332-b75f-052b84d69774
+		summarizeBy: none
+		sourceColumn: account_type
+
+		annotation SummarizationSetBy = User
+
+	column is_return_suspect
+		dataType: int64
+		formatString: 0
+		lineageTag: 0c4ae82d-d983-4964-a8d7-a7b1e3d3caed
+		summarizeBy: none
+		sourceColumn: is_return_suspect
+
+		annotation SummarizationSetBy = User
+
+	measure 'fact_portfolio_snapshot rows' = COUNTROWS(fact_portfolio_snapshot)
+		formatString: #,0
+		lineageTag: 2bd29e27-6fb5-4159-9408-8bfa47a9d295
+
+	partition fact_portfolio_snapshot = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_portfolio_snapshot.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"snapshot_id", Int64.Type}, {"client_id", Int64.Type}, {"advisor_id", Int64.Type}, {"benchmark_id", Int64.Type}, {"snapshot_date", type date}, {"year", Int64.Type}, {"month", Int64.Type}, {"aum", type number}, {"return_ytd", type number}, {"benchmark_return_ytd", type number}, {"active_alpha_ytd", type number}, {"cash_pct", type number}, {"account_type", type text}, {"is_return_suspect", Int64.Type}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,107 @@
+table fact_transactions
+	lineageTag: 9f06eac1-e737-48ee-93db-079303f885b9
+
+	column txn_id
+		dataType: int64
+		formatString: 0
+		lineageTag: eb2370f3-a5b0-47de-9f45-38bfc8b58415
+		summarizeBy: none
+		sourceColumn: txn_id
+
+		annotation SummarizationSetBy = User
+
+	column client_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 2930ef02-ee03-4e06-bf95-a72f15ec7cc3
+		summarizeBy: none
+		sourceColumn: client_id
+
+		annotation SummarizationSetBy = User
+
+	column advisor_id
+		dataType: int64
+		formatString: 0
+		lineageTag: b433ce70-d3b0-4c41-bea6-6c8b967ab110
+		summarizeBy: none
+		sourceColumn: advisor_id
+
+		annotation SummarizationSetBy = User
+
+	column security_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 041b1c22-1a27-473b-a8a1-01f0250e61f2
+		summarizeBy: none
+		sourceColumn: security_id
+
+		annotation SummarizationSetBy = User
+
+	column txn_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: e39da7ef-0d28-4126-876e-b6c910218ef9
+		summarizeBy: none
+		sourceColumn: txn_date
+
+		annotation SummarizationSetBy = User
+
+	column txn_type
+		dataType: string
+		lineageTag: 5ff99357-6bdd-4380-a0ff-040f7afffc5d
+		summarizeBy: none
+		sourceColumn: txn_type
+
+		annotation SummarizationSetBy = User
+
+	column shares
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 12539c86-bd0c-48ee-87b1-f5f4284ee6fd
+		summarizeBy: sum
+		sourceColumn: shares
+
+		annotation SummarizationSetBy = User
+
+	column price
+		dataType: double
+		formatString: #,0.00
+		lineageTag: bec8275d-391f-4813-80e9-e29685e1adf4
+		summarizeBy: none
+		sourceColumn: price
+
+		annotation SummarizationSetBy = User
+
+	column amount
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 66d9dd9a-6e85-4458-90ae-8e5299628c6f
+		summarizeBy: sum
+		sourceColumn: amount
+
+		annotation SummarizationSetBy = User
+
+	column is_post_departure_txn
+		dataType: int64
+		formatString: 0
+		lineageTag: 25996e03-1fcc-4b41-8730-70d2615b0c2e
+		summarizeBy: none
+		sourceColumn: is_post_departure_txn
+
+		annotation SummarizationSetBy = User
+
+	measure 'fact_transactions rows' = COUNTROWS(fact_transactions)
+		formatString: #,0
+		lineageTag: fd99224e-b64f-4580-a53c-904913eec15d
+
+	partition fact_transactions = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_transactions.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"txn_id", Int64.Type}, {"client_id", Int64.Type}, {"advisor_id", Int64.Type}, {"security_id", Int64.Type}, {"txn_date", type date}, {"txn_type", type text}, {"shares", type number}, {"price", type number}, {"amount", type number}, {"is_post_departure_txn", Int64.Type}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

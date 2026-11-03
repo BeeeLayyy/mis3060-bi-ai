@@ -1,0 +1,89 @@
+table fact_fees
+	lineageTag: 480c83c9-b919-460f-9e2b-0121d34120c7
+
+	column fee_id
+		dataType: int64
+		formatString: 0
+		lineageTag: c82052bb-7844-456b-acf6-9ef66d065409
+		summarizeBy: none
+		sourceColumn: fee_id
+
+		annotation SummarizationSetBy = User
+
+	column client_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 0fd4587b-38e5-4a6e-8909-d0f5800c0759
+		summarizeBy: none
+		sourceColumn: client_id
+
+		annotation SummarizationSetBy = User
+
+	column advisor_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 2c20e805-5023-477a-a228-eb2ee639b11c
+		summarizeBy: none
+		sourceColumn: advisor_id
+
+		annotation SummarizationSetBy = User
+
+	column fee_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: cf2d3d64-dae8-4b14-9d2c-77629dc9edc0
+		summarizeBy: none
+		sourceColumn: fee_date
+
+		annotation SummarizationSetBy = User
+
+	column fee_type
+		dataType: string
+		lineageTag: 5df1d6bf-662f-445a-abd2-0fbf7bd65df0
+		summarizeBy: none
+		sourceColumn: fee_type
+
+		annotation SummarizationSetBy = User
+
+	column aum_basis
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 94ce02f9-87a6-4803-87e6-721ba6b2c68b
+		summarizeBy: none
+		sourceColumn: aum_basis
+
+		annotation SummarizationSetBy = User
+
+	column bps_charged
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 387cab39-a274-40e8-9d2c-7539ae9b74e6
+		summarizeBy: none
+		sourceColumn: bps_charged
+
+		annotation SummarizationSetBy = User
+
+	column amount
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 7f9429f0-0f81-42db-b829-81527923f7d4
+		summarizeBy: sum
+		sourceColumn: amount
+
+		annotation SummarizationSetBy = User
+
+	measure 'fact_fees rows' = COUNTROWS(fact_fees)
+		formatString: #,0
+		lineageTag: 3fa9fd77-8253-4015-b1c3-1b08c3800d0d
+
+	partition fact_fees = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_fees.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"fee_id", Int64.Type}, {"client_id", Int64.Type}, {"advisor_id", Int64.Type}, {"fee_date", type date}, {"fee_type", type text}, {"aum_basis", type number}, {"bps_charged", type number}, {"amount", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

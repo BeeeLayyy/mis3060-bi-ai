@@ -1,0 +1,135 @@
+table dim_client
+	lineageTag: 4ffca46d-88dd-4fd5-8d4d-6f3547b01597
+
+	column client_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 527f0ebc-3a33-42d6-bd05-23449fb33fd8
+		summarizeBy: none
+		sourceColumn: client_id
+
+		annotation SummarizationSetBy = User
+
+	column first_name
+		dataType: string
+		lineageTag: 5147bb59-7021-42b4-ab73-96189eb1922c
+		summarizeBy: none
+		sourceColumn: first_name
+
+		annotation SummarizationSetBy = User
+
+	column last_name
+		dataType: string
+		lineageTag: fc31678c-9da2-408a-aa29-707f7150ad9d
+		summarizeBy: none
+		sourceColumn: last_name
+
+		annotation SummarizationSetBy = User
+
+	column age
+		dataType: int64
+		formatString: 0
+		lineageTag: 3354d0af-1128-4c9d-81e4-eb4996a62fb8
+		summarizeBy: none
+		sourceColumn: age
+
+		annotation SummarizationSetBy = User
+
+	column city
+		dataType: string
+		lineageTag: 7ef4a0bc-77cc-4010-9dff-a2df0bd70ff5
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = User
+
+	column state
+		dataType: string
+		lineageTag: 42ff1a0c-29e8-4342-84d7-e28a7bf3cb3e
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = User
+
+	column zip_code
+		dataType: string
+		lineageTag: d7022baa-19c6-4e28-ac3f-2bff91feb540
+		summarizeBy: none
+		sourceColumn: zip_code
+
+		annotation SummarizationSetBy = User
+
+	column risk_profile
+		dataType: string
+		lineageTag: 7dc8eca0-9b6d-4556-989a-e5b251d1c52b
+		summarizeBy: none
+		sourceColumn: risk_profile
+
+		annotation SummarizationSetBy = User
+
+	column client_tier
+		dataType: string
+		lineageTag: 0ab3875c-3a8a-4ae5-9901-0f60daa52c74
+		summarizeBy: none
+		sourceColumn: client_tier
+
+		annotation SummarizationSetBy = User
+
+	column primary_account_type
+		dataType: string
+		lineageTag: 1330e1f2-efbe-4406-a0f6-1938169e7729
+		summarizeBy: none
+		sourceColumn: primary_account_type
+
+		annotation SummarizationSetBy = User
+
+	column initial_aum
+		dataType: double
+		formatString: #,0.00
+		lineageTag: da19ef3f-4c6b-454e-a16a-2aaad32b64ac
+		summarizeBy: none
+		sourceColumn: initial_aum
+
+		annotation SummarizationSetBy = User
+
+	column client_since
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 20548888-db2e-4ab9-afc1-57c36e08678e
+		summarizeBy: none
+		sourceColumn: client_since
+
+		annotation SummarizationSetBy = User
+
+	column advisor_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 0f28bec3-50af-46d2-b92a-19cf93fe9851
+		summarizeBy: none
+		sourceColumn: advisor_id
+
+		annotation SummarizationSetBy = User
+
+	column is_active
+		dataType: boolean
+		lineageTag: 7569255e-80d2-4093-9aee-93f1f32b6e5d
+		summarizeBy: none
+		sourceColumn: is_active
+
+		annotation SummarizationSetBy = User
+
+	measure 'dim_client rows' = COUNTROWS(dim_client)
+		formatString: #,0
+		lineageTag: e5a6a0f3-9b43-4f4a-84d5-867a82021ec1
+
+	partition dim_client = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_client.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"client_id", Int64.Type}, {"first_name", type text}, {"last_name", type text}, {"age", Int64.Type}, {"city", type text}, {"state", type text}, {"zip_code", type text}, {"risk_profile", type text}, {"client_tier", type text}, {"primary_account_type", type text}, {"initial_aum", type number}, {"client_since", type date}, {"advisor_id", Int64.Type}, {"is_active", type logical}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

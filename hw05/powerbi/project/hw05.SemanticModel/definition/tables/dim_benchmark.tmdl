@@ -1,0 +1,51 @@
+table dim_benchmark
+	lineageTag: 9a512c18-aacd-4d76-a9a0-1fa6b4d18d96
+
+	column benchmark_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 0ded2fe4-b00c-41ab-88f0-1247ae90730f
+		summarizeBy: none
+		sourceColumn: benchmark_id
+
+		annotation SummarizationSetBy = User
+
+	column name
+		dataType: string
+		lineageTag: d96b7d40-decf-445b-b9ad-25c938cbbf86
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = User
+
+	column asset_class
+		dataType: string
+		lineageTag: dfcc833e-c8fc-4a23-8bc7-375955de0c50
+		summarizeBy: none
+		sourceColumn: asset_class
+
+		annotation SummarizationSetBy = User
+
+	column ticker_proxy
+		dataType: string
+		lineageTag: 7374f139-91af-452c-80de-79cd34e8bb72
+		summarizeBy: none
+		sourceColumn: ticker_proxy
+
+		annotation SummarizationSetBy = User
+
+	measure 'dim_benchmark rows' = COUNTROWS(dim_benchmark)
+		formatString: #,0
+		lineageTag: 134ad44e-f216-49cf-99fc-ae38b24c6b0e
+
+	partition dim_benchmark = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_benchmark.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"benchmark_id", Int64.Type}, {"name", type text}, {"asset_class", type text}, {"ticker_proxy", type text}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

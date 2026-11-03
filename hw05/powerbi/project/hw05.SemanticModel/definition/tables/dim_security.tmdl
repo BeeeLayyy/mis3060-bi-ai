@@ -1,0 +1,85 @@
+table dim_security
+	lineageTag: feca2e8d-c26b-4a60-83c8-3a3a84112adb
+
+	column security_id
+		dataType: int64
+		formatString: 0
+		lineageTag: dffb123a-f673-48de-b652-038729cc1edb
+		summarizeBy: none
+		sourceColumn: security_id
+
+		annotation SummarizationSetBy = User
+
+	column ticker
+		dataType: string
+		lineageTag: 90c2b50e-8a2a-4f1e-b3f8-6798a4dc64e0
+		summarizeBy: none
+		sourceColumn: ticker
+
+		annotation SummarizationSetBy = User
+
+	column name
+		dataType: string
+		lineageTag: 8f22656f-09d0-4be3-b222-ae0847721740
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = User
+
+	column asset_class
+		dataType: string
+		lineageTag: 8819d167-2609-4ae4-9d18-2d6cbe641c2d
+		summarizeBy: none
+		sourceColumn: asset_class
+
+		annotation SummarizationSetBy = User
+
+	column sector
+		dataType: string
+		lineageTag: c41c7fd9-30dc-4649-89de-ba09a04ba77a
+		summarizeBy: none
+		sourceColumn: sector
+
+		annotation SummarizationSetBy = User
+
+	column benchmark_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 90c13980-29fe-4393-a8cc-62662757539a
+		summarizeBy: none
+		sourceColumn: benchmark_id
+
+		annotation SummarizationSetBy = User
+
+	column is_etf
+		dataType: boolean
+		lineageTag: dc6aa440-8e09-4cd4-86be-1922faa06e9f
+		summarizeBy: none
+		sourceColumn: is_etf
+
+		annotation SummarizationSetBy = User
+
+	column expense_ratio_bps
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 76bc0c10-2b95-43f6-bb73-da27d80a9450
+		summarizeBy: none
+		sourceColumn: expense_ratio_bps
+
+		annotation SummarizationSetBy = User
+
+	measure 'dim_security rows' = COUNTROWS(dim_security)
+		formatString: #,0
+		lineageTag: 44890106-52e7-469a-8d82-53c4a8cc7581
+
+	partition dim_security = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_security.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"security_id", Int64.Type}, {"ticker", type text}, {"name", type text}, {"asset_class", type text}, {"sector", type text}, {"benchmark_id", Int64.Type}, {"is_etf", type logical}, {"expense_ratio_bps", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,4 @@
+expression DataFolder = "C:\Wildcat Capital Clean\" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 10594a26-24aa-4852-8907-b5284e013745
+
+	annotation PBI_ResultType = Text
