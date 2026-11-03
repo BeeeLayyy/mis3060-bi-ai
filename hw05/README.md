@@ -14,6 +14,7 @@ hw05/
 └── powerbi/
     ├── hw05.pbix          Power BI model (Part D)
     ├── model_view.png     Model view screenshot
+    ├── row_counts.png     Report page: COUNTROWS for every table
     └── project/           the same model as a Power BI Project (hw05.pbip), in text form
 ```
 
@@ -37,6 +38,9 @@ With no argument the script looks for `Wildcat Capital Clean/` in the repo root.
 - Fact `advisor_id` matches `dim_client[advisor_id]` on 100% of rows
 
 ## Power BI model
+
+Row counts in Power BI (report page, one `COUNTROWS` measure per table) match the handout exactly: 25 · 8 · 2,500 · 1,827 · 500 · 122,197 · 129,547 · 298,572. See `powerbi/row_counts.png`.
+
 
 13 relationships, all many-to-one with single cross-filter direction. 11 active (fact to dimension), 2 inactive (`dim_client` → `dim_advisor`, `dim_security` → `dim_benchmark`), so the active model is a pure star. Facts join to `dim_date[date]`, and `dim_date` is marked as the date table. Details in `star_design.md`.
 
