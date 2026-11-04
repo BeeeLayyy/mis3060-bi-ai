@@ -1,0 +1,43 @@
+(a) Ending AUM vs SUMX ( VALUES ( dim_client[client_id] ), [Ending AUM] ), no filters
+  Last snapshot date in the model : 2024-12-01
+  Ending AUM                      : $12,729,572,078.86  (2,325 clients)
+  SUMX over clients               : $13,149,297,713.80  (2,500 clients)
+  Difference                      : $419,725,634.94
+  Clients whose last snapshot is before 2024-12-01: 175, holding $419,725,634.94 at their own last snapshot
+  Their last snapshot dates range 2022-12-01 to 2023-11-01
+  is_active of those clients      : {False: 175}
+
+(b) 2024 Fee Yield (bps) vs ICE 9 Effective Fee Rate (bps)
+  Total Fees 2024          : $48,714,005.93
+  SUM(aum) 2024 snapshots  : $135,459,843,783.73  (27,900 client-months)
+  SUM(aum_basis) 2024 fees : $128,385,303,527.10  (26,216 client-months)
+  Fee Yield (bps)          : 43.1543
+  Effective Fee Rate (bps) : 45.5323
+  Snapshot client-months with a fee row     : 26,216
+  Snapshot client-months with NO fee row    : 1,684  holding $7,074,540,256.63 of AUM
+  Fee rows with no snapshot                 : 0
+  Where both exist, aum_basis == aum on     : 100.00% of rows
+  Fee Yield on matched months only (bps)    : 45.5323
+  Unbilled months by tier                   : {'Retail': 1054, 'HNW': 472, 'UHNW': 158}
+  Unbilled months by month                  : {1: 154, 2: 172, 3: 147, 4: 155, 5: 151, 6: 162, 7: 150, 8: 131, 9: 119, 10: 138, 11: 114, 12: 91}
+  Clients with at least one unbilled month  : 1,082; months per client: {'min': 1.0, '50%': 1.0, 'max': 5.0}
+  All years, snapshot months with no fee row: 7,350 of 129,547
+  Advisory Fee rows in fact_transactions 2024: 8,071, $62,187,423.09
+
+(c) Alpha at the last snapshot (2024-12-01)
+  Rows at last snapshot: 2,325; suspect: 148 holding $15,543,506.10
+  AUM-weighted alpha, suspects excluded : 1.4480%
+  Simple mean alpha, same rows          : 0.8788%
+  AUM-weighted alpha, suspects included : 1.6678%
+  Suspect alpha range at last snapshot  : -1.2090 to 71.3378
+  Suspect rows, all months: 3,875; min |alpha| among them: 0.5001
+  2024 AUM-weighted YTD alpha by month (suspects excluded): 1: -0.01%, 2: -0.02%, 3: -0.02%, 4: 0.01%, 5: 0.03%, 6: 0.03%, 7: 0.09%, 8: 0.28%, 9: 0.33%, 10: 0.57%, 11: 0.83%, 12: 1.45%
+  Weighted over all 12 months of 2024 (the wrong way)      : 0.3225%
+
+(d) 2024 Organic Growth Rate vs AUM YoY % by client tier
+  tier       ending_2023       ending_2024        deposits     withdrawals      net_flows organic    yoy non_flow_growth
+   HNW $2,130,154,150.42 $2,548,521,154.33 $120,012,105.03  $94,784,698.77 $25,227,406.26   1.18% 19.64%          18.46%
+Retail   $447,795,648.67   $533,452,497.89 $245,282,579.85 $201,098,532.24 $44,184,047.61   9.87% 19.13%           9.26%
+  UHNW $8,067,021,937.91 $9,647,598,426.64  $45,251,363.79  $37,149,762.40  $8,101,601.39   0.10% 19.59%          19.49%
+  Share of firm 2024 net flows by tier: HNW: 32.5%, Retail: 57.0%, UHNW: 10.5%
+  Share of firm AUM growth (2023-12 to 2024-12) by tier: HNW: 20.1%, Retail: 4.1%, UHNW: 75.8%

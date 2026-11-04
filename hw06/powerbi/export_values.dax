@@ -1,0 +1,45 @@
+// HW6 export for reports/powerbi_values.csv
+// Run in DAX query view, then Copy the result grid (with headers) and paste it into
+// reports/powerbi_values.csv. Columns: measure, slice, value. Values are unformatted
+// (9 decimals) so currency reconciles to the cent; blank means the measure is blank.
+EVALUATE
+UNION (
+    ROW ( "measure", "Total Fees", "slice", "Total", "value", FORMAT ( [Total Fees], "0.000000000" ) ),
+    ROW ( "measure", "Net Flows", "slice", "Total", "value", FORMAT ( [Net Flows], "0.000000000" ) ),
+    ROW ( "measure", "AUM (naive SUM)", "slice", "Total", "value", FORMAT ( [AUM (naive SUM)], "0.000000000" ) ),
+    ROW ( "measure", "Ending AUM", "slice", "Total", "value", FORMAT ( [Ending AUM], "0.000000000" ) ),
+    ROW ( "measure", "Ending Clients", "slice", "Total", "value", FORMAT ( [Ending Clients], "0.000000000" ) ),
+    ROW ( "measure", "Avg AUM per Client", "slice", "Total", "value", FORMAT ( [Avg AUM per Client], "0.000000000" ) ),
+    ROW ( "measure", "Ending AUM LY", "slice", "Total", "value", FORMAT ( [Ending AUM LY], "0.000000000" ) ),
+    ROW ( "measure", "AUM YoY %", "slice", "Total", "value", FORMAT ( [AUM YoY %], "0.000000000" ) ),
+    ROW ( "measure", "Ending AUM PM", "slice", "Total", "value", FORMAT ( [Ending AUM PM], "0.000000000" ) ),
+    ROW ( "measure", "AUM MoM %", "slice", "Total", "value", FORMAT ( [AUM MoM %], "0.000000000" ) ),
+    ROW ( "measure", "Avg Monthly AUM", "slice", "Total", "value", FORMAT ( [Avg Monthly AUM], "0.000000000" ) ),
+    ROW ( "measure", "Fee Yield (bps)", "slice", "Total", "value", FORMAT ( [Fee Yield (bps)], "0.000000000" ) ),
+    ROW ( "measure", "Organic Growth Rate", "slice", "Total", "value", FORMAT ( [Organic Growth Rate], "0.000000000" ) ),
+    ROW ( "measure", "AUM-Weighted Alpha", "slice", "Total", "value", FORMAT ( [AUM-Weighted Alpha], "0.000000000" ) ),
+    ROW ( "measure", "Alpha Signal", "slice", "Total", "value", [Alpha Signal] ),
+    ROW ( "measure", "Top 10 Client Share", "slice", "Total", "value", FORMAT ( [Top 10 Client Share], "0.000000000" ) ),
+    SELECTCOLUMNS ( VALUES ( dim_date[year] ), "measure", "AUM (naive SUM)", "slice", "year=" & dim_date[year], "value", FORMAT ( [AUM (naive SUM)], "0.000000000" ) ),
+    SELECTCOLUMNS ( VALUES ( dim_date[year] ), "measure", "Ending AUM", "slice", "year=" & dim_date[year], "value", FORMAT ( [Ending AUM], "0.000000000" ) ),
+    SELECTCOLUMNS ( VALUES ( dim_date[year] ), "measure", "Ending AUM LY", "slice", "year=" & dim_date[year], "value", FORMAT ( [Ending AUM LY], "0.000000000" ) ),
+    SELECTCOLUMNS ( VALUES ( dim_date[year] ), "measure", "AUM YoY %", "slice", "year=" & dim_date[year], "value", FORMAT ( [AUM YoY %], "0.000000000" ) ),
+    SELECTCOLUMNS ( VALUES ( dim_date[year] ), "measure", "Avg Monthly AUM", "slice", "year=" & dim_date[year], "value", FORMAT ( [Avg Monthly AUM], "0.000000000" ) ),
+    SELECTCOLUMNS ( VALUES ( dim_date[year] ), "measure", "Fee Yield (bps)", "slice", "year=" & dim_date[year], "value", FORMAT ( [Fee Yield (bps)], "0.000000000" ) ),
+    SELECTCOLUMNS ( VALUES ( dim_date[year] ), "measure", "Organic Growth Rate", "slice", "year=" & dim_date[year], "value", FORMAT ( [Organic Growth Rate], "0.000000000" ) ),
+    SELECTCOLUMNS ( VALUES ( dim_date[year] ), "measure", "AUM-Weighted Alpha", "slice", "year=" & dim_date[year], "value", FORMAT ( [AUM-Weighted Alpha], "0.000000000" ) ),
+    SELECTCOLUMNS ( VALUES ( dim_date[year] ), "measure", "Alpha Signal", "slice", "year=" & dim_date[year], "value", [Alpha Signal] ),
+    CALCULATETABLE ( SELECTCOLUMNS ( VALUES ( dim_client[client_tier] ), "measure", "Ending AUM", "slice", "tier=" & dim_client[client_tier] & "|year=2024", "value", FORMAT ( [Ending AUM], "0.000000000" ) ), dim_date[year] = 2024 ),
+    CALCULATETABLE ( SELECTCOLUMNS ( VALUES ( dim_client[client_tier] ), "measure", "Avg AUM per Client", "slice", "tier=" & dim_client[client_tier] & "|year=2024", "value", FORMAT ( [Avg AUM per Client], "0.000000000" ) ), dim_date[year] = 2024 ),
+    CALCULATETABLE ( SELECTCOLUMNS ( VALUES ( dim_client[client_tier] ), "measure", "Ending AUM LY", "slice", "tier=" & dim_client[client_tier] & "|year=2024", "value", FORMAT ( [Ending AUM LY], "0.000000000" ) ), dim_date[year] = 2024 ),
+    CALCULATETABLE ( SELECTCOLUMNS ( VALUES ( dim_client[client_tier] ), "measure", "AUM YoY %", "slice", "tier=" & dim_client[client_tier] & "|year=2024", "value", FORMAT ( [AUM YoY %], "0.000000000" ) ), dim_date[year] = 2024 ),
+    CALCULATETABLE ( SELECTCOLUMNS ( VALUES ( dim_client[client_tier] ), "measure", "Fee Yield (bps)", "slice", "tier=" & dim_client[client_tier] & "|year=2024", "value", FORMAT ( [Fee Yield (bps)], "0.000000000" ) ), dim_date[year] = 2024 ),
+    CALCULATETABLE ( SELECTCOLUMNS ( VALUES ( dim_client[client_tier] ), "measure", "Organic Growth Rate", "slice", "tier=" & dim_client[client_tier] & "|year=2024", "value", FORMAT ( [Organic Growth Rate], "0.000000000" ) ), dim_date[year] = 2024 ),
+    CALCULATETABLE ( SELECTCOLUMNS ( VALUES ( dim_client[client_tier] ), "measure", "AUM-Weighted Alpha", "slice", "tier=" & dim_client[client_tier] & "|year=2024", "value", FORMAT ( [AUM-Weighted Alpha], "0.000000000" ) ), dim_date[year] = 2024 ),
+    CALCULATETABLE ( SELECTCOLUMNS ( VALUES ( dim_client[client_tier] ), "measure", "Alpha Signal", "slice", "tier=" & dim_client[client_tier] & "|year=2024", "value", [Alpha Signal] ), dim_date[year] = 2024 ),
+    CALCULATETABLE ( SELECTCOLUMNS ( VALUES ( dim_client[client_tier] ), "measure", "Top 10 Client Share", "slice", "tier=" & dim_client[client_tier] & "|year=2024", "value", FORMAT ( [Top 10 Client Share], "0.000000000" ) ), dim_date[year] = 2024 ),
+    CALCULATETABLE ( ROW ( "measure", "Ending AUM", "slice", "month=2024-12", "value", FORMAT ( [Ending AUM], "0.000000000" ) ), dim_date[year] = 2024, dim_date[month] = 12 ),
+    CALCULATETABLE ( ROW ( "measure", "Ending AUM PM", "slice", "month=2024-12", "value", FORMAT ( [Ending AUM PM], "0.000000000" ) ), dim_date[year] = 2024, dim_date[month] = 12 ),
+    CALCULATETABLE ( ROW ( "measure", "AUM MoM %", "slice", "month=2024-12", "value", FORMAT ( [AUM MoM %], "0.000000000" ) ), dim_date[year] = 2024, dim_date[month] = 12 )
+)
+ORDER BY [measure], [slice]
