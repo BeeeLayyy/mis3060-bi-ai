@@ -41,7 +41,11 @@ python hw06/scripts/02_design_questions.py "Wildcat Capital Clean"
 
 With no argument both scripts look for `Wildcat Capital Clean/` in the repo root. If `reports/powerbi_values.csv` is missing, script 01 writes only `reports/pandas_values.csv`.
 
-## Power BI steps
+## Power BI status
+
+Done on 2026-11-04: `hw06.pbix` was saved from the posted `Wildcat_Star_Model.pbix`, `measures.tmdl` applied cleanly (16 measures, all `Valid`), and the **Measures** page has the 4 cards, the table by `dim_date[year]`, and the table by `client_tier` with a visual-level filter on year = 2024. The export below came from that file.
+
+## Power BI steps (to rebuild)
 
 1. Open `Wildcat_Star_Model.pbix`, **File → Save as** `hw06/powerbi/hw06.pbix`
 2. **TMDL view** → new tab → paste `measures.tmdl` → **Apply**. This creates `_Measures` with all 16 measures and their formats. If Apply fails, create `_Measures` with **Enter data** (guide §0) and run `measures_define.dax` in DAX query view, clicking **Update model with changes**
