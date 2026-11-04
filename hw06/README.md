@@ -2,7 +2,7 @@
 
 MIS3060 Business Intelligence with AI | Brandon Le
 
-A library of 12 DAX measures on the Wildcat Capital star model (balances, growth, fee yield, alpha, concentration), each built with the pattern that matches its additivity class and reconciled to an independent pandas calculation.
+A library of DAX measures (#0 to #11 plus the two base measures, 16 in all) on the Wildcat Capital star model (balances, growth, fee yield, alpha, concentration), each built with the pattern that matches its additivity class and reconciled to an independent pandas calculation.
 
 ## Structure
 
@@ -68,4 +68,9 @@ Claude drafted the DAX and both scripts; Claude Code reviewed them before the co
 
 | What Claude Code flagged | What I did |
 |---|---|
-| *(see below)* | |
+| The grid copied from DAX query view pastes as tab-separated with `[measure]` headers; the script read commas only and would crash | Separator is sniffed, brackets stripped; tested with a tab-separated paste |
+| A required row missing from `powerbi_values.csv` counted as a match when the pandas value was blank (the three 2020 rows) | Missing rows are now always `False`; Power BI rows with unknown labels are listed too |
+| `AUM (naive SUM)` sums 129,547 floats to $566.7B; a different summation order can drift close to the $0.01 tolerance | Currency tolerance is `max(0.01, 1e-13 × value)`, which only widens for that row |
+| Net Flows and the growth % helpers did not copy DAX blank handling in edge cases | Net Flows is blank only when there are no deposits or withdrawals; YoY/MoM return -100% when only the current balance is blank |
+| Several Part C and Part D numbers (top-10 list, 2022 share, tie check, unbilled first/last months) were not produced by any committed script | Added to `02_design_questions.py`; fixed two wording errors it exposed (tier counts were client-months, not clients) |
+| `FORMAT` in the export query is locale-dependent | Kept; a comma-decimal export would fail loudly in the reconciliation, not silently |

@@ -75,7 +75,16 @@ say(f"  Snapshot client-months with NO fee row    : {len(no_fee):,}  holding {mo
 say(f"  Fee rows with no snapshot                 : {(m['_merge'] == 'right_only').sum():,}")
 say(f"  Where both exist, aum_basis == aum on     : {(abs(both['aum'] - both['aum_basis']) < 0.005).mean():.2%} of rows")
 say(f"  Fee Yield on matched months only (bps)    : {both['amount'].sum() * 12 * 10000 / both['aum'].sum():.4f}")
-say(f"  Unbilled months by tier                   : {no_fee['client_tier'].value_counts().to_dict()}")
+say(f"  Unbilled client-months by tier            : {no_fee['client_tier'].value_counts().to_dict()}")
+say(f"  Clients with an unbilled month, by tier   : {no_fee.groupby('client_tier')['client_id'].nunique().to_dict()}")
+first = snap.groupby("client_id")["snapshot_date"].transform("min")
+lastm = snap.groupby("client_id")["snapshot_date"].transform("max")
+nf = no_fee.set_index(["client_id", "month"]).index
+pos = snap.assign(first=first, lastm=lastm).set_index(["client_id", "snapshot_date"])
+pos = pos[pos.index.isin(nf)]
+say(f"  Unbilled months that are the client's first month: {(pos.index.get_level_values(1) == pos['first']).mean():.1%}; "
+    f"last month: {(pos.index.get_level_values(1) == pos['lastm']).mean():.1%} "
+    f"(all 2024 snapshot months that are a last month: {(s24['snapshot_date'] == lastm[s24.index]).mean():.1%})")
 say(f"  Unbilled months by month                  : {no_fee['month'].dt.month.value_counts().sort_index().to_dict()}")
 cl = no_fee.groupby("client_id").size()
 say(f"  Clients with at least one unbilled month  : {len(cl):,}; months per client: {cl.describe()[['min', '50%', 'max']].to_dict()}")
@@ -134,6 +143,40 @@ say(f"  Share of firm 2024 net flows by tier: "
     + ", ".join(f"{r.tier}: {r.net_flows / d['net_flows'].sum():.1%}" for r in d.itertuples()))
 say(f"  Share of firm AUM growth (2023-12 to 2024-12) by tier: "
     + ", ".join(f"{r.tier}: {(r.ending_2024 - r.ending_2023) / (d['ending_2024'] - d['ending_2023']).sum():.1%}" for r in d.itertuples()))
+
+say()
+
+# ------------------------------------------------------------------ Part D: Top 10 Client Share checks
+say("Part D: Top 10 Client Share edge cases")
+
+
+def top10(r):
+    """Rank on the balance at the slice's last snapshot (the measure)."""
+    lastd = r["snapshot_date"].max()
+    a = r[r["snapshot_date"] == lastd].groupby("client_id")["aum"].sum().sort_values(ascending=False)
+    return a, a.head(10).sum() / a.sum()
+
+
+def top10_naive(r):
+    """Rank on each client's own last balance, like [Ending AUM] per client inside TOPN."""
+    own = r.sort_values("snapshot_date").groupby("client_id").tail(1).set_index("client_id")["aum"]
+    top = own.sort_values(ascending=False).head(10).index
+    rr = r[r["client_id"].isin(top)]
+    num = rr.loc[rr["snapshot_date"] == rr["snapshot_date"].max(), "aum"].sum()   # CALCULATE ( [Ending AUM], Top10 )
+    return set(top), num / r.loc[r["snapshot_date"] == r["snapshot_date"].max(), "aum"].sum()
+
+
+slices = {"Total": snap, "year=2022": snap[snap["snapshot_date"].dt.year == 2022]}
+for tier in sorted(snap["client_tier"].unique()):
+    slices[f"tier={tier}|year=2024"] = snap[(snap["snapshot_date"].dt.year == 2024) & (snap["client_tier"] == tier)]
+for lab, r in slices.items():
+    a, share = top10(r)
+    naive_set, naive_share = top10_naive(r)
+    say(f"  {lab:<22} share {share:.4%} | naive {naive_share:.4%} | same top 10: {naive_set == set(a.head(10).index)} "
+        f"| 10th {money(a.iloc[9])} vs 11th {money(a.iloc[10])}")
+a, _ = top10(snap)
+say(f"  Top 10 at {last.date()}: {list(a.head(10).index)} summing to {money(a.head(10).sum())}")
+say(f"  Largest balance of a departed client at their own last snapshot: {money(gone['aum'].max())}")
 
 OUT.parent.mkdir(exist_ok=True)
 OUT.write_text("\n".join(lines) + "\n")

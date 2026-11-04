@@ -227,7 +227,7 @@ RETURN
 
 ### Two design choices worth calling out
 
-- **`Top 10 Client Share` ranks on the balance at the filter's last snapshot, not on `[Ending AUM]` per client.** `[Ending AUM]` evaluated for one client finds that client's own last date, so a client who left in 2023 would be ranked on a stale balance (see Part C (a)). Pinning every client to `LastSnapshot` keeps the numerator and the denominator on the same date. In this data the two versions give the same answer at every slice I tested, but only the pinned version is correct by construction.
+- **`Top 10 Client Share` ranks on the balance at the filter's last snapshot, not on `[Ending AUM]` per client.** `[Ending AUM]` evaluated for one client finds that client's own last date, so a client who left in 2023 would be ranked on a stale balance (see Part C (a)). Pinning every client to `LastSnapshot` keeps the numerator and the denominator on the same date. In this data the two versions pick the same 10 clients at the total, 2022 and every 2024 tier (`scripts/02_design_questions.py`, Part D section), because the largest departed client held $43.4M, below the 10th-place $74.4M. Only the pinned version is correct by construction.
 - **`TOPN` iterates `VALUES ( dim_client[client_id] )`, not `ALL ( dim_client )`**, so in the tier table the top 10 are the top 10 of that tier and the share can never exceed 100%.
 
 ## Report page
@@ -279,13 +279,13 @@ Same fees, different denominator. pandas evidence:
 
 - Where a client-month has both a snapshot and a fee row, `aum_basis = aum` on 100% of rows, so the two bases agree whenever both exist
 - 1,684 snapshot client-months in 2024 have **no fee row at all**, holding $7.07B of AUM. Dropping them from the denominator gives a Fee Yield of exactly 45.53 bps, the Effective Fee Rate
-- The gaps are scattered: 1,082 clients, every month, every tier (Retail 1,054, HNW 472, UHNW 158), usually one month per client and not tied to a client's first or last month. Across 2020-2024 it is 7,350 of 129,547 snapshot months (5.7%)
+- The gaps are scattered: 1,082 clients (Retail 667, HNW 307, UHNW 108), every month of the year, usually one month per client. None is a client's first month, and they are no more likely than other months to be a client's last (5.4% vs 8.3%), so this is not onboarding or offboarding. Across 2020-2024 it is 7,350 of 129,547 snapshot months (5.7%)
 
 **Data limitation:** `fact_fees` does not cover every client-month that holds assets. Effective Fee Rate only looks at months that were billed, so it overstates what the firm earns per dollar managed; Fee Yield charges the unbilled AUM too. The data cannot say whether those months were waived, billed somewhere else, or simply not captured. (Fee revenue is also split across tables: `fact_transactions` holds 8,071 "Advisory Fee" rows worth $62.2M in 2024 that neither measure counts.)
 
 ### (c) Why `AUM-Weighted Alpha` reads the last snapshot only, and why suspects are excluded
 
-`active_alpha_ytd` is year-to-date, so each month's row holds more of the year than the one before. The January row is the first sliver of the year; the December row is the year. Weighting across every month of 2024 averages partial years together and gives 0.32%, while the December snapshot alone gives 1.45%. By month, 2024 weighted YTD alpha climbs from -0.01% in January to 1.45% in December. Only the last snapshot in the filter is a complete reading, which is why the measure pins `LastSnapshot`. It also keeps each client's weight at one balance instead of twelve.
+`active_alpha_ytd` is year-to-date, so each month's row holds more of the year than the one before. The January row is the first sliver of the year; the December row is the year. Weighting across every month of 2024 averages partial years together and gives 0.32%, while the December snapshot alone gives 1.45%. By month, 2024 weighted YTD alpha sits near 0% from January to June, then rises to 1.45% in December. Only the last snapshot in the filter is a complete reading, which is why the measure pins `LastSnapshot`. It also keeps each client's weight at one balance instead of twelve.
 
 `is_return_suspect = 1` marks rows whose alpha is not believable: every one of the 3,875 flagged rows has |alpha| above 50%. At 2024-12-01 there are 148 of them holding only $15.5M (0.12% of AUM), but with alpha as high as 7,134%, so a tiny weight still moves the result.
 
