@@ -1,109 +1,155 @@
 # Model metadata for Claude (Part D)
 
-> **Replace this file's tables with the three INFO.VIEW result grids from `hw06.pbix`** (guide §2) before you submit. The tables below were built from the HW5 TMDL (same eight tables and the same 11 active fact→dimension relationships) so the Part D prompt could be drafted; the posted `Wildcat_Star_Model.pbix` is the source of truth.
+Exported from `hw06.pbix` in DAX query view with the three INFO.VIEW queries from guide §2 (run 2026-11-04).
 
-## Columns (INFO.VIEW.COLUMNS)
+Things worth knowing from this export:
+- 11 fact → dimension relationships, all many-to-one, single direction, plus `dim_security[benchmark_id]` → `dim_benchmark` active in this posted model
+- The two `LocalDateTable_*` rows are Power BI's auto date/time tables (hidden), not part of the star
+- `dim_date` columns are `Date`, `Year`, `Month`; DAX names are case-insensitive, so `dim_date[date]` resolves
+- `fact_portfolio_snapshot` also has its own `Year` and `Month` columns; visuals use `dim_date[Year]` instead so time intelligence works
 
-| Table | Column | DataType |
-|---|---|---|
-| dim_advisor | advisor_id | int64 |
-| dim_advisor | first_name | string |
-| dim_advisor | last_name | string |
-| dim_advisor | region | string |
-| dim_advisor | years_experience | int64 |
-| dim_advisor | aum_target_mm | double |
-| dim_advisor | certifications | string |
-| dim_benchmark | benchmark_id | int64 |
-| dim_benchmark | name | string |
-| dim_benchmark | asset_class | string |
-| dim_benchmark | ticker_proxy | string |
-| dim_client | client_id | int64 |
-| dim_client | first_name | string |
-| dim_client | last_name | string |
-| dim_client | age | int64 |
-| dim_client | city | string |
-| dim_client | state | string |
-| dim_client | zip_code | string |
-| dim_client | risk_profile | string |
-| dim_client | client_tier | string |
-| dim_client | primary_account_type | string |
-| dim_client | initial_aum | double |
-| dim_client | client_since | dateTime |
-| dim_client | advisor_id | int64 |
-| dim_client | is_active | boolean |
-| dim_date | date_id | int64 |
-| dim_date | date | dateTime |
-| dim_date | year | int64 |
-| dim_date | quarter | int64 |
-| dim_date | month | int64 |
-| dim_date | month_name | string |
-| dim_date | week_of_year | int64 |
-| dim_date | day_of_week | string |
-| dim_date | is_month_end | int64 |
-| dim_date | is_quarter_end | int64 |
-| dim_date | is_year_end | int64 |
-| dim_date | is_trading_day | int64 |
-| dim_security | security_id | int64 |
-| dim_security | ticker | string |
-| dim_security | name | string |
-| dim_security | asset_class | string |
-| dim_security | sector | string |
-| dim_security | benchmark_id | int64 |
-| dim_security | is_etf | boolean |
-| dim_security | expense_ratio_bps | double |
-| fact_fees | fee_id | int64 |
-| fact_fees | client_id | int64 |
-| fact_fees | advisor_id | int64 |
-| fact_fees | fee_date | dateTime |
-| fact_fees | fee_type | string |
-| fact_fees | aum_basis | double |
-| fact_fees | bps_charged | double |
-| fact_fees | amount | double |
-| fact_portfolio_snapshot | snapshot_id | int64 |
-| fact_portfolio_snapshot | client_id | int64 |
-| fact_portfolio_snapshot | advisor_id | int64 |
-| fact_portfolio_snapshot | benchmark_id | int64 |
-| fact_portfolio_snapshot | snapshot_date | dateTime |
-| fact_portfolio_snapshot | year | int64 |
-| fact_portfolio_snapshot | month | int64 |
-| fact_portfolio_snapshot | aum | double |
-| fact_portfolio_snapshot | return_ytd | double |
-| fact_portfolio_snapshot | benchmark_return_ytd | double |
-| fact_portfolio_snapshot | active_alpha_ytd | double |
-| fact_portfolio_snapshot | cash_pct | double |
-| fact_portfolio_snapshot | account_type | string |
-| fact_portfolio_snapshot | is_return_suspect | int64 |
-| fact_transactions | txn_id | int64 |
-| fact_transactions | client_id | int64 |
-| fact_transactions | advisor_id | int64 |
-| fact_transactions | security_id | int64 |
-| fact_transactions | txn_date | dateTime |
-| fact_transactions | txn_type | string |
-| fact_transactions | shares | double |
-| fact_transactions | price | double |
-| fact_transactions | amount | double |
-| fact_transactions | is_post_departure_txn | int64 |
+## INFO.VIEW.COLUMNS
 
-## Relationships (INFO.VIEW.RELATIONSHIPS)
+| Table | Column | DataType | DAX formula | IsHidden |
+|---|---|---|---|---|
+| _Measures | Value | Text |  | true |
+| DateTableTemplate_b50879b8-a09d-4fd7-b9a6-7a34995295aa | Date | Date |  | true |
+| DateTableTemplate_b50879b8-a09d-4fd7-b9a6-7a34995295aa | Day | Integer | DAY([Date]) | true |
+| DateTableTemplate_b50879b8-a09d-4fd7-b9a6-7a34995295aa | Quarter | Text | Qtr  & [QuarterNo] | true |
+| DateTableTemplate_b50879b8-a09d-4fd7-b9a6-7a34995295aa | QuarterNo | Integer | INT(([MonthNo] + 2) / 3) | true |
+| DateTableTemplate_b50879b8-a09d-4fd7-b9a6-7a34995295aa | Month | Text | FORMAT([Date], "MMMM") | true |
+| DateTableTemplate_b50879b8-a09d-4fd7-b9a6-7a34995295aa | MonthNo | Integer | MONTH([Date]) | true |
+| DateTableTemplate_b50879b8-a09d-4fd7-b9a6-7a34995295aa | Year | Integer | YEAR([Date]) | true |
+| dim_advisor | advisor_id | Integer |  | false |
+| dim_advisor | certifications | Text |  | false |
+| dim_advisor | aum_target_mm | Integer |  | false |
+| dim_advisor | years_experience | Integer |  | false |
+| dim_advisor | region | Text |  | false |
+| dim_advisor | last_name | Text |  | false |
+| dim_advisor | first_name | Text |  | false |
+| dim_benchmark | name | Text |  | false |
+| dim_benchmark | benchmark_id | Integer |  | false |
+| dim_benchmark | ticker_proxy | Text |  | false |
+| dim_benchmark | asset_class | Text |  | false |
+| dim_client | age | Integer |  | false |
+| dim_client | last_name | Text |  | false |
+| dim_client | first_name | Text |  | false |
+| dim_client | client_id | Integer |  | false |
+| dim_client | zip_code | Text |  | false |
+| dim_client | risk_profile | Text |  | false |
+| dim_client | client_tier | Text |  | false |
+| dim_client | primary_account_type | Text |  | false |
+| dim_client | initial_aum | Number |  | false |
+| dim_client | client_since | Date |  | false |
+| dim_client | advisor_id | Integer |  | false |
+| dim_client | is_active | True/False |  | false |
+| dim_client | state | Text |  | false |
+| dim_client | city | Text |  | false |
+| dim_date | Quarter | Integer |  | false |
+| dim_date | date_id | Integer |  | false |
+| dim_date | Date | Date |  | false |
+| dim_date | Year | Integer |  | false |
+| dim_date | Month | Integer |  | false |
+| dim_date | month_name | Text |  | false |
+| dim_date | week_of_year | Integer |  | false |
+| dim_date | day_of_week | Text |  | false |
+| dim_date | is_month_end | Integer |  | false |
+| dim_date | is_quarter_end | Integer |  | false |
+| dim_date | is_year_end | Integer |  | false |
+| dim_date | is_trading_day | Integer |  | false |
+| dim_security | name | Text |  | false |
+| dim_security | ticker | Text |  | false |
+| dim_security | security_id | Integer |  | false |
+| dim_security | expense_ratio_bps | Integer |  | false |
+| dim_security | is_etf | True/False |  | false |
+| dim_security | benchmark_id | Integer |  | false |
+| dim_security | sector | Text |  | false |
+| dim_security | asset_class | Text |  | false |
+| fact_fees | aum_basis | Number |  | false |
+| fact_fees | fee_type | Text |  | false |
+| fact_fees | fee_date | Date |  | false |
+| fact_fees | fee_id | Integer |  | false |
+| fact_fees | client_id | Integer |  | false |
+| fact_fees | advisor_id | Integer |  | false |
+| fact_fees | amount | Number |  | false |
+| fact_fees | bps_charged | Number |  | false |
+| fact_portfolio_snapshot | cash_pct | Number |  | false |
+| fact_portfolio_snapshot | benchmark_return_ytd | Number |  | false |
+| fact_portfolio_snapshot | return_ytd | Number |  | false |
+| fact_portfolio_snapshot | aum | Number |  | false |
+| fact_portfolio_snapshot | Month | Integer |  | false |
+| fact_portfolio_snapshot | Year | Integer |  | false |
+| fact_portfolio_snapshot | snapshot_date | Date |  | false |
+| fact_portfolio_snapshot | benchmark_id | Integer |  | false |
+| fact_portfolio_snapshot | advisor_id | Integer |  | false |
+| fact_portfolio_snapshot | client_id | Integer |  | false |
+| fact_portfolio_snapshot | snapshot_id | Integer |  | false |
+| fact_portfolio_snapshot | is_return_suspect | Integer |  | false |
+| fact_portfolio_snapshot | account_type | Text |  | false |
+| fact_portfolio_snapshot | active_alpha_ytd | Number |  | false |
+| fact_transactions | shares | Number |  | false |
+| fact_transactions | price | Number |  | false |
+| fact_transactions | txn_date | Date |  | false |
+| fact_transactions | advisor_id | Integer |  | false |
+| fact_transactions | security_id | Integer |  | false |
+| fact_transactions | amount | Number |  | false |
+| fact_transactions | txn_type | Text |  | false |
+| fact_transactions | client_id | Integer |  | false |
+| fact_transactions | txn_id | Integer |  | false |
+| fact_transactions | is_post_departure_txn | Integer |  | false |
+| LocalDateTable_30b0d5f8-768e-4d2a-9562-888fa2f9b2e7 | QuarterNo | Integer | INT(([MonthNo] + 2) / 3) | true |
+| LocalDateTable_30b0d5f8-768e-4d2a-9562-888fa2f9b2e7 | Date | Date |  | true |
+| LocalDateTable_30b0d5f8-768e-4d2a-9562-888fa2f9b2e7 | Year | Integer | YEAR([Date]) | true |
+| LocalDateTable_30b0d5f8-768e-4d2a-9562-888fa2f9b2e7 | MonthNo | Integer | MONTH([Date]) | true |
+| LocalDateTable_30b0d5f8-768e-4d2a-9562-888fa2f9b2e7 | Month | Text | FORMAT([Date], "MMMM") | true |
+| LocalDateTable_30b0d5f8-768e-4d2a-9562-888fa2f9b2e7 | Day | Integer | DAY([Date]) | true |
+| LocalDateTable_30b0d5f8-768e-4d2a-9562-888fa2f9b2e7 | Quarter | Text | Qtr  & [QuarterNo] | true |
+| LocalDateTable_976ce71a-eea0-49bb-b089-dd421adaa4b8 | Year | Integer | YEAR([Date]) | true |
+| LocalDateTable_976ce71a-eea0-49bb-b089-dd421adaa4b8 | MonthNo | Integer | MONTH([Date]) | true |
+| LocalDateTable_976ce71a-eea0-49bb-b089-dd421adaa4b8 | Month | Text | FORMAT([Date], "MMMM") | true |
+| LocalDateTable_976ce71a-eea0-49bb-b089-dd421adaa4b8 | QuarterNo | Integer | INT(([MonthNo] + 2) / 3) | true |
+| LocalDateTable_976ce71a-eea0-49bb-b089-dd421adaa4b8 | Quarter | Text | Qtr  & [QuarterNo] | true |
+| LocalDateTable_976ce71a-eea0-49bb-b089-dd421adaa4b8 | Day | Integer | DAY([Date]) | true |
+| LocalDateTable_976ce71a-eea0-49bb-b089-dd421adaa4b8 | Date | Date |  | true |
 
-All many-to-one, single cross-filter direction, active.
+## INFO.VIEW.RELATIONSHIPS
 
-| From (many) | To (one) |
-|---|---|
-| fact_fees.client_id | dim_client.client_id |
-| fact_fees.advisor_id | dim_advisor.advisor_id |
-| fact_fees.fee_date | dim_date.date |
-| fact_portfolio_snapshot.client_id | dim_client.client_id |
-| fact_portfolio_snapshot.advisor_id | dim_advisor.advisor_id |
-| fact_portfolio_snapshot.benchmark_id | dim_benchmark.benchmark_id |
-| fact_portfolio_snapshot.snapshot_date | dim_date.date |
-| fact_transactions.client_id | dim_client.client_id |
-| fact_transactions.advisor_id | dim_advisor.advisor_id |
-| fact_transactions.security_id | dim_security.security_id |
-| fact_transactions.txn_date | dim_date.date |
+| Relationship | IsActive | CrossFilteringBehavior | FromCardinality | ToCardinality | State |
+|---|---|---|---|---|---|
+| 'fact_transactions'[advisor_id] *[<-]1 'dim_advisor'[advisor_id] | true | OneDirection | Many | One | Ready |
+| 'fact_transactions'[client_id] *[<-]1 'dim_client'[client_id] | true | OneDirection | Many | One | Ready |
+| 'fact_transactions'[security_id] *[<-]1 'dim_security'[security_id] | true | OneDirection | Many | One | Ready |
+| 'fact_transactions'[txn_date] *[<-]1 'dim_date'[date] | true | OneDirection | Many | One | Ready |
+| 'fact_portfolio_snapshot'[advisor_id] *[<-]1 'dim_advisor'[advisor_id] | true | OneDirection | Many | One | Ready |
+| 'fact_portfolio_snapshot'[benchmark_id] *[<-]1 'dim_benchmark'[benchmark_id] | true | OneDirection | Many | One | Ready |
+| 'fact_portfolio_snapshot'[client_id] *[<-]1 'dim_client'[client_id] | true | OneDirection | Many | One | Ready |
+| 'fact_portfolio_snapshot'[snapshot_date] *[<-]1 'dim_date'[date] | true | OneDirection | Many | One | Ready |
+| 'fact_fees'[advisor_id] *[<-]1 'dim_advisor'[advisor_id] | true | OneDirection | Many | One | Ready |
+| 'fact_fees'[client_id] *[<-]1 'dim_client'[client_id] | true | OneDirection | Many | One | Ready |
+| 'fact_fees'[fee_date] *[<-]1 'dim_date'[date] | true | OneDirection | Many | One | Ready |
+| 'dim_client'[client_since] *[<-]1 'LocalDateTable_976ce71a-eea0-49bb-b089-dd421adaa4b8'[Date] | true | OneDirection | Many | One | Ready |
+| 'dim_date'[date] *[<-]1 'LocalDateTable_30b0d5f8-768e-4d2a-9562-888fa2f9b2e7'[Date] | true | OneDirection | Many | One | Ready |
+| 'dim_security'[benchmark_id] *[<-]1 'dim_benchmark'[benchmark_id] | true | OneDirection | Many | One | Ready |
 
-`dim_date` is marked as the date table on `dim_date[date]`.
+## INFO.VIEW.MEASURES
 
-## Measures (INFO.VIEW.MEASURES)
+All 16 measures returned `State = Valid`. The DAX formula column matches `../powerbi/measures.md` exactly. The export's FormatString column came back empty; the formats are set on the measures (Measure tools shows them) and are listed here.
 
-All in `_Measures`; DAX and format strings are in `../powerbi/measures.md`.
+| Table | Measure | FormatString | State |
+|---|---|---|---|
+| _Measures | Total Fees | `\$#,0.00` | Valid |
+| _Measures | Net Flows | `\$#,0.00` | Valid |
+| _Measures | AUM (naive SUM) | `\$#,0.00` | Valid |
+| _Measures | Ending AUM | `\$#,0.00` | Valid |
+| _Measures | Ending Clients | `#,0` | Valid |
+| _Measures | Avg AUM per Client | `\$#,0.00` | Valid |
+| _Measures | Ending AUM LY | `\$#,0.00` | Valid |
+| _Measures | AUM YoY % | `0.00%` | Valid |
+| _Measures | Ending AUM PM | `\$#,0.00` | Valid |
+| _Measures | AUM MoM % | `0.00%` | Valid |
+| _Measures | Avg Monthly AUM | `\$#,0.00` | Valid |
+| _Measures | Fee Yield (bps) | `0.00` | Valid |
+| _Measures | Organic Growth Rate | `0.00%` | Valid |
+| _Measures | AUM-Weighted Alpha | `0.00%` | Valid |
+| _Measures | Alpha Signal | `(text)` | Valid |
+| _Measures | Top 10 Client Share | `0.00%` | Valid |

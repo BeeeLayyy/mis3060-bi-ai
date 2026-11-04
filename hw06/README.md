@@ -60,7 +60,7 @@ With no argument both scripts look for `Wildcat Capital Clean/` in the repo root
 
 ## Mismatches
 
-None so far on the pandas side. Fill in after step 5: list any row that did not match at first, which side was wrong, and the fix.
+None. All 91 rows of `reports/measure_reconciliation.csv` match on the first run (Power BI export from `hw06.pbix`, 2026-11-04). The closest call is `AUM (naive SUM)` by year 2020, where Power BI prints 88551598743.6199 and pandas 88551598743.62: a float summation difference far inside the $0.01 tolerance.
 
 ## Claude Code findings
 
